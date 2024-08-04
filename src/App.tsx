@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css'
 import WelcomeScreen from './screens/auth/welcome';
 import ChooseAuthScreen from './screens/auth/auth';
+import GenerateSeedPhrase from './screens/auth/create_wallet/get_seed';
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<WelcomeScreen />} />
           <Route path="/auth" element={<ChooseAuthScreen />} />
+          <Route path="/auth/create-wallet" element={<GenerateSeedPhrase />} />
         </Routes>
       </Router>
     </div>
