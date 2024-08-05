@@ -9,6 +9,7 @@ import SetWalletPassword from './screens/auth/create_wallet/set_password';
 import HomeScreen from './screens/home';
 import { Toaster } from 'react-hot-toast';
 import LoginScreen from './screens/ask-login';
+import GetWalletFromSeed from './screens/auth/import_wallet/get-wallet-seed';
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
           <Route path="/" element={<WelcomeScreen />} />
           <Route path="/auth" element={<ChooseAuthScreen />} />
           <Route path="/auth/create-wallet" element={<GenerateSeedPhrase />} />
+          <Route path="/auth/get-wallet-seed" element={<GetWalletFromSeed />} />
           <Route path="/auth/set-wallet-password" element={<SetWalletPassword />} />
           <Route path="/home" element={<HomeScreen />} />
           <Route path="/login" element={<LoginScreen />} />

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
-import { isLoggedInAtom, walletAtom } from "../atom/global";
+import { walletAtom } from "../atom/global";
 import { Wallet } from "ethers";
 import toast from 'react-hot-toast';
 
@@ -10,16 +10,13 @@ export default function LoginScreen() {
 
     const [password, setPassword] = useState("");
    
-    const [invalidPassword, setInvalidPassword] = useState(false);
     let [,setWallet] = useAtom(walletAtom);
-    let [,setIsLoggedin] = useAtom(isLoggedInAtom);
 
     const navigate = useNavigate();
 
     const login = async () => {
 
         let encWallet = localStorage.getItem("wallet")!;
-        console.log("helll")
 
         try {
             let wallet = await Wallet.fromEncryptedJson(encWallet,password);
