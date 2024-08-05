@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import './App.css'
 import WelcomeScreen from './screens/auth/welcome';
@@ -10,10 +10,16 @@ import HomeScreen from './screens/home';
 import { Toaster } from 'react-hot-toast';
 import LoginScreen from './screens/ask-login';
 import GetWalletFromSeed from './screens/auth/import_wallet/get-wallet-seed';
+import { useAtom } from 'jotai';
+import { isLoggedInAtom } from './atom/global';
+import BottomBar from './components/bottom-bar';
 
 function App() {
 
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom); 
 
   useEffect(()=> {
 
@@ -23,11 +29,10 @@ function App() {
       navigate("/")
     } else {
       navigate("/login")
+      setIsLoggedin(true);
     }
-
+    console.log(location)
   },[])
-
-  
 
 
   return (
@@ -42,7 +47,9 @@ function App() {
           <Route path="/login" element={<LoginScreen />} />
 
         </Routes>
-
+        {
+          isLoggedin && location.pathname !== "/login" && <BottomBar/>
+        }
         <Toaster/>
     </div>
   )

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { ethers } from 'ethers';
 import { useAtom } from "jotai";
 import { walletAtom } from "../../../atom/global";
@@ -45,17 +44,6 @@ export default function GetWalletFromSeed() {
             );
         }
     }
-
-    // const generateWallet = async () => {
-    //     let wallet = ethers.Wallet.createRandom();
-    //     setWords(wallet.mnemonic?.phrase.split(" "));
-    //     setWallet(wallet);
-    // }
-
-
-    // useEffect(()=>{
-    //     generateWallet();
-    // },[])
 
     return (
 
