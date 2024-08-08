@@ -3,8 +3,11 @@ import { CiBellOn, CiWallet } from "react-icons/ci";
 import { BsSend } from "react-icons/bs";
 import { FaEthereum } from "react-icons/fa";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="w-screen h-16 bg-gray-950 shadow-xl flex items-center justify-between px-5 pt-6">
@@ -32,6 +35,9 @@ export default function Home() {
           style={{ stroke: "url(#blue-gradient)" }}
           className="text-white"
           size={25}
+          onClick={() => {
+            navigate("/scanner");
+          }}
         />
       </div>
 

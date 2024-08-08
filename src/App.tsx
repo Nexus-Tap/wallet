@@ -12,6 +12,7 @@ import GetWalletFromSeed from "./screens/auth/import_wallet/get-wallet-seed";
 import { useAtom } from "jotai";
 import { isLoggedInAtom } from "./atom/global";
 import BottomBar from "./components/bottom-bar";
+import ScannerPage from "./screens/auth/scanner";
 
 function App() {
   const navigate = useNavigate();
@@ -44,6 +45,8 @@ function App() {
         />
         <Route path="/home" element={<HomeScreen />} />
         <Route path="/login" element={<LoginScreen />} />
+
+        <Route path="/scanner" element={<ScannerPage />} />
       </Routes>
       {isLoggedin && location.pathname !== "/login" && <BottomBar />}
       <Toaster />
