@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import HomeComp from "../components/home";
+import Home from "../components/mainhome";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function HomeScreen() {
         </div>
       </div> */}
 
-      <HomeComp />
+      <Home />
     </>
   );
 }
