@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
-import "./App.css";
 import WelcomeScreen from "./screens/auth/welcome";
 import ChooseAuthScreen from "./screens/auth/auth";
 import GenerateSeedPhrase from "./screens/auth/create_wallet/get_seed";
@@ -20,17 +19,17 @@ function App() {
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
 
-  useEffect(() => {
-    let encWallet = localStorage.getItem("wallet");
+  // useEffect(() => {
+  //   let encWallet = localStorage.getItem("wallet");
 
-    if (encWallet === null) {
-      navigate("/");
-    } else {
-      navigate("/login");
-      setIsLoggedin(true);
-    }
-    console.log(location);
-  }, []);
+  //   if (encWallet === null) {
+  //     navigate("/");
+  //   } else {
+  //     navigate("/login");
+  //     setIsLoggedin(true);
+  //   }
+  //   console.log(location);
+  // }, []);
 
   return (
     <div className="w-screen min-h-screen bg-black flex flex-col">
