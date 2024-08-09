@@ -13,6 +13,7 @@ import { useAtom } from "jotai";
 import { isLoggedInAtom } from "./atom/global";
 import BottomBar from "./components/bottom-bar";
 import ScannerPage from "./screens/auth/scanner";
+import ReceivePage from "./screens/auth/recieve";
 
 function App() {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ function App() {
         <Route path="/login" element={<LoginScreen />} />
 
         <Route path="/scanner" element={<ScannerPage />} />
+        <Route path="/receive" element={<ReceivePage />} />
       </Routes>
       {isLoggedin && location.pathname !== "/login" && <BottomBar />}
       <Toaster />

@@ -58,7 +58,10 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="w-17 h-17 flex flex-col justify-center items-center">
+        <div
+          className="w-17 h-17 flex flex-col justify-center items-center"
+          onClick={() => navigate("/receive")}
+        >
           <div className="w-12 h-12 flex justify-center items-center bg-gray-900 rounded-full overflow-hidden">
             <CiWallet className="text-gray-200" size={24} />
           </div>
