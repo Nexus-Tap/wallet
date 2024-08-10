@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import WelcomeScreen from "./screens/auth/welcome";
@@ -21,25 +21,27 @@ function App() {
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
 
-  // useEffect(() => {
-  //   let encWallet = localStorage.getItem("wallet");
+  useEffect(() => {
+    let encWallet = localStorage.getItem("wallet");
 
-  //   if (encWallet === null) {
-  //     navigate("/");
-  //   } else {
-  //     navigate("/login");
-  //     setIsLoggedin(true);
-  //   }
-  //   console.log(location);
-  // }, []);
+    if (encWallet === null) {
+      navigate("/");
+    } else {
+      navigate("/login");
+      setIsLoggedin(true);
+    }
+    console.log(location);
+  }, []);
 
   return (
     <div className="w-screen min-h-screen bg-black flex flex-col">
       <Routes>
         <Route path="/" element={<WelcomeScreen />} />
         <Route path="/auth" element={<ChooseAuthScreen />} />
+
         <Route path="/auth/create-wallet" element={<GenerateSeedPhrase />} />
         <Route path="/auth/get-wallet-seed" element={<GetWalletFromSeed />} />
+
         <Route
           path="/auth/set-wallet-password"
           element={<SetWalletPassword />}
@@ -50,7 +52,9 @@ function App() {
         <Route path="/scanner" element={<ScannerPage />} />
         <Route path="/receive" element={<ReceivePage />} />
       </Routes>
+
       {isLoggedin && location.pathname !== "/login" && <BottomBar />}
+
       <Toaster />
     </div>
   );
