@@ -4,9 +4,19 @@ import { BsSend } from "react-icons/bs";
 import { FaEthereum } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useAtom } from "jotai";
+import { walletAtom } from "@/atom/global";
+import { useEffect } from "react";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [wallet] = useAtom(walletAtom);
+
+  useEffect(() => {
+    if (!wallet) return;
+
+    // console.log();
+  }, []);
 
   return (
     <>

@@ -30,7 +30,6 @@ function App() {
       navigate("/login");
       setIsLoggedin(true);
     }
-    console.log(location);
   }, []);
 
   return (
