@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import WelcomeScreen from "./screens/auth/welcome";
@@ -18,11 +18,13 @@ import ReceivePage from "./screens/auth/recieve";
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
+  const app = window.Telegram.WebApp;
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
+  const [data, setData] = useState(null);
 
   useEffect(() => {
-    let encWallet = localStorage.getItem("wallet");
+    const encWallet = localStorage.getItem("wallet");
 
     if (encWallet === null) {
       navigate("/");
@@ -32,30 +34,67 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    window.addEventListener("message", handleMessage);
+
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  const handleMessage = (event: MessageEvent) => {
+    console.log(event);
+
+    setData(event.data);
+
+    if (event.data.type === "SIGN_REQUEST") {
+      // setMessageToSign(event.data.message);
+      // handleSign();
+    }
+  };
+
+  const handleSign = () => {
+    // Implement your signing logic here
+    const signature = `signed - ${app.initDataUnsafe.start_param}`;
+
+    app.sendData(signature);
+    alert(window.parent.window);
+    app.openLink("http://localhost:5174/");
+    // app.openLink("http://localhost:5174/?signature=" + signature);
+
+    window.opener.postMessage({ type: "SIGNATURE_RESULT", signature }, "*");
+
+    window.parent.postMessage({ type: "SIGNATURE_RESULT", signature }, "*");
+  };
+
   return (
-    <div className="w-screen min-h-screen bg-black flex flex-col">
-      <Routes>
-        <Route path="/" element={<WelcomeScreen />} />
-        <Route path="/auth" element={<ChooseAuthScreen />} />
+    <>
+      <button className="bg-blue-400 w-20" onClick={handleSign}>
+        {app.initDataUnsafe.start_param}
+      </button>
 
-        <Route path="/auth/create-wallet" element={<GenerateSeedPhrase />} />
-        <Route path="/auth/get-wallet-seed" element={<GetWalletFromSeed />} />
+      <div className="w-screen min-h-screen bg-black flex flex-col">
+        <Routes>
+          <Route path="/" element={<WelcomeScreen />} />
+          <Route path="/auth" element={<ChooseAuthScreen />} />
 
-        <Route
-          path="/auth/set-wallet-password"
-          element={<SetWalletPassword />}
-        />
-        <Route path="/home" element={<HomeScreen />} />
-        <Route path="/login" element={<LoginScreen />} />
+          <Route path="/auth/create-wallet" element={<GenerateSeedPhrase />} />
+          <Route path="/auth/get-wallet-seed" element={<GetWalletFromSeed />} />
 
-        <Route path="/scanner" element={<ScannerPage />} />
-        <Route path="/receive" element={<ReceivePage />} />
-      </Routes>
+          <Route
+            path="/auth/set-wallet-password"
+            element={<SetWalletPassword />}
+          />
+          <Route path="/home" element={<HomeScreen />} />
+          <Route path="/login" element={<LoginScreen />} />
 
-      {isLoggedin && location.pathname !== "/login" && <BottomBar />}
+          <Route path="/scanner" element={<ScannerPage />} />
+          <Route path="/receive" element={<ReceivePage />} />
+        </Routes>
 
-      <Toaster />
-    </div>
+        {isLoggedin && location.pathname !== "/login" && <BottomBar />}
+
+        <Toaster />
+      </div>
+    </>
   );
 }
 
