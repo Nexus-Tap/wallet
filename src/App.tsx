@@ -21,7 +21,6 @@ function App() {
   const app = window.Telegram.WebApp;
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
-  const [data, setData] = useState(null);
 
   useEffect(() => {
     const encWallet = localStorage.getItem("wallet");
@@ -34,43 +33,8 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("message", handleMessage);
-
-    return () => window.removeEventListener("message", handleMessage);
-  }, []);
-
-  const handleMessage = (event: MessageEvent) => {
-    console.log(event);
-
-    setData(event.data);
-
-    if (event.data.type === "SIGN_REQUEST") {
-      // setMessageToSign(event.data.message);
-      // handleSign();
-    }
-  };
-
-  const handleSign = () => {
-    // Implement your signing logic here
-    const signature = `signed - ${app.initDataUnsafe.start_param}`;
-
-    app.sendData(signature);
-    alert(window.parent.window);
-    app.openLink("http://localhost:5174/");
-    // app.openLink("http://localhost:5174/?signature=" + signature);
-
-    window.opener.postMessage({ type: "SIGNATURE_RESULT", signature }, "*");
-
-    window.parent.postMessage({ type: "SIGNATURE_RESULT", signature }, "*");
-  };
-
   return (
     <>
-      <button className="bg-blue-400 w-20" onClick={handleSign}>
-        {app.initDataUnsafe.start_param}
-      </button>
-
       <div className="w-screen min-h-screen bg-black flex flex-col">
         <Routes>
           <Route path="/" element={<WelcomeScreen />} />
