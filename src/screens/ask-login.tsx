@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { walletAtom } from "../atom/global";
 import { Wallet } from "ethers";
 import toast from "react-hot-toast";
@@ -10,14 +10,17 @@ export default function LoginScreen() {
   const [, setWallet] = useAtom(walletAtom);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const login = async () => {
     const encWallet = localStorage.getItem("wallet")!;
+    const currentParams = new URLSearchParams(location.search);
+    const query = currentParams.toString();
 
     try {
       const wallet = await Wallet.fromEncryptedJson(encWallet, password);
       setWallet(wallet);
-      navigate("/home");
+      navigate(`/home?${query}`);
     } catch {
       toast.error("Invalid Password, please try again.", {
         duration: 4000,

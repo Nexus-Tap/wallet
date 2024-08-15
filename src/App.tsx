@@ -31,21 +31,23 @@ function App() {
     };
 
     // Add event listener
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup event listener on component unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   useEffect(() => {
     const encWallet = localStorage.getItem("wallet");
+    const currentParams = new URLSearchParams(location.search);
+    const query = currentParams.toString();
 
     if (encWallet === null) {
-      navigate("/");
+      navigate(`/?${query}`);
     } else {
-      navigate("/login");
+      navigate(`/login?${query}`);
       setIsLoggedin(true);
     }
   }, []);
@@ -53,9 +55,11 @@ function App() {
   if (isLargeScreen) {
     return (
       <div className="w-screen h-screen bg-white flex justify-center items-center">
-        <p className="text-xl text-red-500">Can only be used inside telegram mini app.</p>
+        <p className="text-xl text-red-500">
+          Can only be used inside telegram mini app.
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -78,8 +82,6 @@ function App() {
           <Route path="/scanner" element={<ScannerPage />} />
           <Route path="/receive" element={<ReceivePage />} />
           <Route path="/send" element={<SendPage />} />
-
-
         </Routes>
 
         {isLoggedin && location.pathname !== "/login" && <BottomBar />}
