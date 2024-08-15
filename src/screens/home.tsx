@@ -3,7 +3,7 @@ import { CiBellOn, CiWallet } from "react-icons/ci";
 import { BsSend } from "react-icons/bs";
 import { FaEthereum } from "react-icons/fa";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { walletAtom, walletData } from "@/atom/global";
 import { useEffect, useState } from "react";
@@ -11,10 +11,12 @@ import { getWallet } from "@/apis/wallet";
 
 import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
-
+import toast from "react-hot-toast";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [wallet] = useAtom(walletAtom);
   const [myWalletData, setMyWalletData] = useAtom(walletData);
 
@@ -28,16 +30,56 @@ export default function HomeScreen() {
     }
 
     setMyWalletData(data);
+  };
 
+  async function processData() {
+    const currentParams = new URLSearchParams(location.search);
+    const startappQuery = currentParams.get("startapp");
+
+    if (!startappQuery || !wallet) return;
+
+    const data = JSON.parse(startappQuery);
+    const signedMessage = await wallet.signMessage(data.message);
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/sdk/store-signature",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            sessionId: data.sessionId,
+            signedMessage: signedMessage,
+          }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Successfully signed the message");
+
+        currentParams.delete("startapp");
+
+        navigate(`${location.pathname}?${currentParams.toString()}`, {
+          replace: true,
+        });
+
+        // TODO: Close the app
+        window.close();
+      } else {
+        toast.error("Failed to sign the message");
+      }
+    } catch (error) {
+      console.error("Error storing signature:", error);
+      toast.error("Failed to sign the message");
+    }
   }
 
   useEffect(() => {
     if (!wallet) return;
 
     initData();
-
+    processData();
   }, []);
-
 
   return (
     <>
@@ -52,7 +94,12 @@ export default function HomeScreen() {
 
           <div className="w-1/2 flex flex-col justify-center ml-3">
             <p className="text-white font-bold flex items-center">
-              {wallet?.address.slice(0, 5)}...{wallet?.address.slice(wallet.address.length - 4, wallet.address.length)} <IoIosArrowDown className="ml-3" />{" "}
+              {wallet?.address.slice(0, 5)}...
+              {wallet?.address.slice(
+                wallet.address.length - 4,
+                wallet.address.length
+              )}{" "}
+              <IoIosArrowDown className="ml-3" />{" "}
             </p>
             <p className="text-white text-[9px] flex items-center">
               {" "}
@@ -73,14 +120,21 @@ export default function HomeScreen() {
       </div>
 
       <div className="w-screen flex flex-col items-center mt-10">
-        <p className="text-3xl text-white font-bold">{myWalletData?.balance.toFixed(4)} ETH</p>
+        <p className="text-3xl text-white font-bold">
+          {myWalletData?.balance.toFixed(4)} ETH
+        </p>
         <p className="text-white text-sm">
           ${myWalletData?.price.toFixed(2)}
-          {
-            myWalletData?.percent_change! < 0
-              ? <span className="text-red-600"> {myWalletData?.percent_change.toFixed(2)}%</span>
-              : <span className="text-green-600">+{myWalletData?.percent_change.toFixed(2)}%</span>
-          }
+          {myWalletData?.percent_change! < 0 ? (
+            <span className="text-red-600">
+              {" "}
+              {myWalletData?.percent_change.toFixed(2)}%
+            </span>
+          ) : (
+            <span className="text-green-600">
+              +{myWalletData?.percent_change.toFixed(2)}%
+            </span>
+          )}
         </p>
       </div>
 
@@ -127,7 +181,9 @@ export default function HomeScreen() {
           ].map((item, index) => (
             <h3
               key={index}
-              onClick={() => { setSeeTokens(!seeTokens) }}
+              onClick={() => {
+                setSeeTokens(!seeTokens);
+              }}
               className={cn(
                 "text-white font-semibold py-2.5",
                 !item.active && "text-cyan-200",
@@ -142,68 +198,64 @@ export default function HomeScreen() {
         <div className="bg-gray-700 w-full h-[1px] border-none"></div>
       </div>
 
-      {
+      {seeTokens ? (
+        <div className="h-[200px] flex flex-col gap-6 px-4 overflow-y-scroll">
+          {myWalletData?.tokens.map((item, index) => (
+            <>
+              <div key={index} className="flex flex-row items-center gap-2.5">
+                <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
+                  <FaCoins className="text-gray-200" size={24} />
+                </div>
 
-        seeTokens
-          ? (
-            <div className="h-[200px] flex flex-col gap-6 px-4 overflow-y-scroll">
-              {myWalletData?.tokens.map((item, index) => (
-                <>
-                  <div key={index} className="flex flex-row items-center gap-2.5">
-                    <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
-                      <FaCoins className="text-gray-200" size={24} />
-                    </div>
+                <div className="flex flex-1 flex-col">
+                  <p className="text-white font-semibold">{item.name}</p>
 
-                    <div className="flex flex-1 flex-col">
-                      <p className="text-white font-semibold">{item.name}</p>
+                  <p className="text-sm flex flex-row gap-2">
+                    <span className="text-gray-400">
+                      ${item.price.toFixed(2)}
+                    </span>
 
-                      <p className="text-sm flex flex-row gap-2">
-                        <span className="text-gray-400">${item.price.toFixed(2)}</span>
+                    <span
+                      className={cn(
+                        item.percent_change < 0
+                          ? "text-red-600"
+                          : "text-green-300"
+                      )}
+                    >
+                      {item.percent_change > 0 ? "+" : ""}
+                      {item.percent_change.toFixed(2)}%
+                    </span>
+                  </p>
+                </div>
 
-                        <span
-                          className={cn(
-                            item.percent_change < 0 ? "text-red-600" : "text-green-300"
-                          )}
-                        >
-                          {item.percent_change > 0 ? "+" : ""}
-                          {item.percent_change.toFixed(2)}
-                          %
-                        </span>
-                      </p>
-                    </div>
-
-                    <p className="text-white text-sm">{item.balance}</p>
+                <p className="text-white text-sm">{item.balance}</p>
+              </div>
+            </>
+          ))}
+        </div>
+      ) : (
+        <div className="h-[200px] flex flex-col gap-6 px-4 overflow-y-scroll">
+          {myWalletData?.nfts.length === 0 ? (
+            <span className="text-sm text-red-500 text-center">No NFTS</span>
+          ) : (
+            myWalletData?.nfts.map((item, index) => (
+              <>
+                <div key={index} className="flex flex-row items-center gap-2.5">
+                  <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
+                    <img src={item.image_url} alt={item.name} />
                   </div>
-                </>
-              ))}
-            </div>
-          )
 
-          : (
-            <div className="h-[200px] flex flex-col gap-6 px-4 overflow-y-scroll">
-              {
-                myWalletData?.nfts.length === 0
-                  ? <span className="text-sm text-red-500 text-center">No NFTS</span>
-                  : myWalletData?.nfts.map((item, index) => (
-                    <>
-                      <div key={index} className="flex flex-row items-center gap-2.5">
-                        <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
-                          <img src={item.image_url} alt={item.name} />
-                        </div>
+                  <div className="flex flex-1 flex-col">
+                    <p className="text-white font-semibold">{item.name}</p>
+                  </div>
 
-                        <div className="flex flex-1 flex-col">
-                          <p className="text-white font-semibold">{item.name}</p>
-                        </div>
-
-                        <p className="text-white text-sm">{item.identifier}</p>
-                      </div>
-                    </>
-                  ))
-              }
-            </div>
-          )
-
-      }
+                  <p className="text-white text-sm">{item.identifier}</p>
+                </div>
+              </>
+            ))
+          )}
+        </div>
+      )}
 
       <div></div>
     </>
