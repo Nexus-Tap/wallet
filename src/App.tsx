@@ -14,6 +14,7 @@ import { isLoggedInAtom } from "./atom/global";
 import BottomBar from "./components/bottom-bar";
 import ScannerPage from "./screens/auth/scanner";
 import ReceivePage from "./screens/auth/recieve";
+import SendPage from "./screens/send";
 
 function App() {
   const navigate = useNavigate();
@@ -52,6 +53,9 @@ function App() {
 
           <Route path="/scanner" element={<ScannerPage />} />
           <Route path="/receive" element={<ReceivePage />} />
+          <Route path="/send" element={<SendPage />} />
+
+          
         </Routes>
 
         {isLoggedin && location.pathname !== "/login" && <BottomBar />}

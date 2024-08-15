@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.1.1",
+    "@radix-ui/react-slot": "^1.1.0",
     "@twa-dev/sdk": "^7.8.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/telegram-web-app": "^7.8.0",
@@ -22,6 +24,7 @@
     "framer-motion": "^11.3.24",
     "jotai": "^2.9.1",
     "lucide-react": "^0.426.0",
+    "ngrok": "^5.0.0-beta.2",
     "qrcode.react": "^3.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -30,7 +33,7 @@
     "react-qr-code": "^2.0.15",
     "react-router-dom": "^6.26.0",
     "seed-phrase-generator": "^1.2.7",
-    "tailwind-merge": "^2.4.0",
+    "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0"
   },
@@ -45,8 +48,8 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
-    "postcss": "^8.4.40",
-    "tailwindcss": "^3.4.7",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
     "typescript": "^5.2.2",
     "vite": "^5.3.4"
   }
