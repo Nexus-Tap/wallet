@@ -13,8 +13,8 @@ export default function ScannerPage() {
       <div className="max-w-full">
         <Scanner
           onScan={(result) => {
-            console.log(result);
             setQrValue(result[0].rawValue);
+            navigate("/send",{state: {qrData: qrValue}})
           }}
         />
       </div>
@@ -22,7 +22,7 @@ export default function ScannerPage() {
       <div className="my-4 text-white break-all">{qrValue}</div>
 
       <button
-        onClick={() => {}}
+        onClick={() => {navigate("/send",{state: {qrData: qrValue}})}}
         className="w-full mt-10 flex items-center justify-center bg-gradient-to-r from-green-400 to-purple-400 py-2 px-4 mb-10 rounded-md text-white font-semibold"
       >
         Continue

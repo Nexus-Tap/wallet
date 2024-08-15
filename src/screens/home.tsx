@@ -78,7 +78,7 @@ export default function HomeScreen() {
           ${myWalletData?.price.toFixed(2)}
           {
             myWalletData?.percent_change! < 0
-              ? <span className="text-red-600">-{myWalletData?.percent_change.toFixed(2)}%</span>
+              ? <span className="text-red-600"> {myWalletData?.percent_change.toFixed(2)}%</span>
               : <span className="text-green-600">+{myWalletData?.percent_change.toFixed(2)}%</span>
           }
         </p>

@@ -23,6 +23,22 @@ function App() {
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
 
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 700);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth > 500);
+    };
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     const encWallet = localStorage.getItem("wallet");
 
@@ -33,6 +49,14 @@ function App() {
       setIsLoggedin(true);
     }
   }, []);
+
+  if (isLargeScreen) {
+    return (
+      <div className="w-screen h-screen bg-white flex justify-center items-center">
+        <p className="text-xl text-red-500">Can only be used inside telegram mini app.</p>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -55,7 +79,7 @@ function App() {
           <Route path="/receive" element={<ReceivePage />} />
           <Route path="/send" element={<SendPage />} />
 
-          
+
         </Routes>
 
         {isLoggedin && location.pathname !== "/login" && <BottomBar />}

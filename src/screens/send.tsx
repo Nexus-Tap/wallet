@@ -1,15 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdQrScanner } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 export default function SendPage() {
 
     const [toWalletAddr, setToWalletAddr] = useState("");
+    const [coinCount, setCoinCount] = useState(0);
+    const [cryptoType, setCryptoType] = useState("ETH");
 
+    const location = useLocation();
+
+    const {qrData} = location.state || {};
+    
+    useEffect(()=>{
+        if(qrData !== "") {
+            setToWalletAddr(qrData);
+        }
+    },[])
 
     const navigate = useNavigate();
 
@@ -31,22 +42,22 @@ export default function SendPage() {
                 </div>
 
                 <div className="flex w-full max-w-sm items-center space-x-2 mt-10">
-                    <Select>
+                    <Select onValueChange={setCryptoType} value={cryptoType}>
                         <SelectTrigger className="w-[100px] bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
-                            <SelectValue placeholder="ETH" />
+                            <SelectValue/>
                         </SelectTrigger>
                         <SelectContent className="bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
                             <SelectGroup>
                                 <SelectLabel>Token</SelectLabel>
-                                <SelectItem value="apple">ETH</SelectItem>
-                                <SelectItem value="banana">USDC</SelectItem>
-                                <SelectItem value="blueberry">USDT</SelectItem>
-                                <SelectItem value="grapes">DAI</SelectItem>
-                                <SelectItem value="pineapple">WBTC</SelectItem>
+                                <SelectItem value="ETH">ETH</SelectItem>
+                                <SelectItem value="USDC">USDC</SelectItem>
+                                <SelectItem value="USDT">USDT</SelectItem>
+                                <SelectItem value="DAI">DAI</SelectItem>
+                                <SelectItem value="WBTC">WBTC</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Input type="number" min={0} placeholder="0.00" className="bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white" />
+                    <Input type="number" min={0} value={coinCount} onChange={(e)=> setCoinCount(parseInt(e.target.value))} placeholder="0.00" className="bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white" />
                 </div>
 
                 <div className="w-full h-[100px] p-3 mt-10 border-[1px] border-gray-500 rounded-lg flex">
@@ -74,7 +85,7 @@ export default function SendPage() {
                         onClick={() => navigate("/home")}
                         className="w-[44%] h-10 flex items-center justify-center bg-gradient-to-r from-green-400 to-purple-400 py-2 px-4 rounded-md text-white font-semibold"
                     >
-                        Continue
+                        Confirm
                     </button>
                 </div>
             </form >
