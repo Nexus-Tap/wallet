@@ -12,7 +12,7 @@ import { getWallet } from "@/apis/wallet";
 import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
-import { getWalletAddress, signMessage } from "@/sdk";
+import { getWalletAddress, sendEth, signMessage } from "@/sdk";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -55,12 +55,20 @@ export default function HomeScreen() {
           throw new Error("Failed to store the signature");
         }
       } else if (data.type === "CONNECT") {
-        const signedMessage = await getWalletAddress(wallet, data.sessionId);
+        const walletAddress = await getWalletAddress(wallet, data.sessionId);
 
-        if (signedMessage) {
+        if (walletAddress) {
           toast.success("Successfully connected");
         } else {
           throw new Error("Failed to connect to wallet");
+        }
+      } else if (data.type === "SEND_ETH") {
+        const txHash = await sendEth(wallet, data.sessionId, data.data);
+
+        if (txHash) {
+          toast.success("Successfully signed txn");
+        } else {
+          throw new Error("Failed to sign txn");
         }
       }
     } catch (error: any) {

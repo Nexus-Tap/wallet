@@ -31,3 +31,26 @@ export async function getWalletAddress(
 
   return walletAddress;
 }
+
+export async function sendEth(
+  wallet: Wallet | HDNodeWallet,
+  sessionId: string,
+  data: {
+    to: string;
+    amount: number;
+  }
+): Promise<string> {
+  const txRes = await wallet.sendTransaction({
+    to: data.to,
+    value: data.amount,
+    from: wallet.address,
+  });
+
+  await storeData({
+    sessionId: sessionId,
+    type: "SEND_ETH",
+    data: txRes.hash,
+  });
+
+  return txRes.hash;
+}
