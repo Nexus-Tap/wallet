@@ -13,6 +13,7 @@ import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { getWalletAddress, sendEth, signMessage } from "@/sdk";
+import { ethers, TransactionRequest } from "ethers";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -86,6 +87,24 @@ export default function HomeScreen() {
     processData();
   }, []);
 
+  async function onSend() {
+    if (!wallet) return;
+
+    const txReq: TransactionRequest = {
+      to: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      value: 1000,
+    };
+
+    const signedTx = await wallet.signTransaction(txReq);
+    console.log(`signedTx: ${signedTx}`);
+
+    const provider = new ethers.InfuraProvider();
+    const _wallet = wallet.connect(provider);
+
+    const populatedTx = await _wallet.populateTransaction(txReq);
+    console.log(`populatedTx: ${populatedTx}`);
+  }
+
   return (
     <>
       <div className="w-screen h-16 bg-gray-950 shadow-xl flex items-center justify-between px-5 pt-6">
@@ -146,7 +165,10 @@ export default function HomeScreen() {
       <div className="w-screen mt-10 px-14 flex justify-between">
         <div
           className="w-17 h-17 flex flex-col justify-center items-center"
-          onClick={() => navigate("/send")}
+          onClick={() => {
+            onSend();
+            // navigate("/send");
+          }}
         >
           <div className="w-12 h-12 flex justify-center items-center bg-gray-900 rounded-full overflow-hidden">
             <BsSend className="text-gray-200" size={24} />
