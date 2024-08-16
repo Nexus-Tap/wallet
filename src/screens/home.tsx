@@ -14,6 +14,7 @@ import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { getWalletAddress, sendEth, signMessage } from "@/sdk";
 import { ethers, TransactionRequest } from "ethers";
+import { sendTransaction } from "@/apis/sdk";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -90,19 +91,26 @@ export default function HomeScreen() {
   async function onSend() {
     if (!wallet) return;
 
-    const txReq: TransactionRequest = {
-      to: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      value: 1000,
-    };
+    try {
+      const txReq: TransactionRequest = {
+        to: "0x17BE8cd0301597c1c701327aeF29917ea744Df4b",
+        from: "0x17BE8cd0301597c1c701327aeF29917ea744Df4b",
+        value: 10,
+        gasLimit: 21000,
+        gasPrice: 100000000,
+        chainId: 421614,
+        nonce: 6,
+      };
 
-    const signedTx = await wallet.signTransaction(txReq);
-    console.log(`signedTx: ${signedTx}`);
+      const signedTxn = await wallet.signTransaction(txReq);
+      console.log(`signedTx: ${signedTxn}`);
 
-    const provider = new ethers.InfuraProvider();
-    const _wallet = wallet.connect(provider);
-
-    const populatedTx = await _wallet.populateTransaction(txReq);
-    console.log(`populatedTx: ${populatedTx}`);
+      const res = await sendTransaction({ signedTxn });
+      console.log(res);
+    } catch (error: any) {
+      console.error(error?.message, error);
+      toast.error(error?.message ?? "Error sending transaction");
+    }
   }
 
   return (
