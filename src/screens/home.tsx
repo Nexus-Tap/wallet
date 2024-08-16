@@ -12,6 +12,7 @@ import { getWallet } from "@/apis/wallet";
 import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
+import { storeData } from "@/apis/sdk";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -39,34 +40,21 @@ export default function HomeScreen() {
     if (!startappQuery || !wallet) return;
 
     const data = JSON.parse(startappQuery);
-    const signedMessage = await wallet.signMessage(data.message);
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/sdk/store-signature",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            sessionId: data.sessionId,
-            signedMessage: signedMessage,
-          }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const signedMessage = await wallet.signMessage(data.data);
 
-      if (response.ok) {
+      const storedData = await storeData({
+        sessionId: data.sessionId,
+        type: data.type,
+        data: signedMessage,
+      });
+
+      if (storedData) {
         toast.success("Successfully signed the message");
-
-        currentParams.delete("startapp");
-
-        navigate(`${location.pathname}?${currentParams.toString()}`, {
-          replace: true,
-        });
-
-        // TODO: Close the app
         window.close();
       } else {
-        toast.error("Failed to sign the message");
+        throw new Error("Failed to store the signature");
       }
     } catch (error) {
       console.error("Error storing signature:", error);

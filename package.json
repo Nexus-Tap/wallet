@@ -16,6 +16,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/telegram-web-app": "^7.8.0",
     "@yudiel/react-qr-scanner": "^2.0.4",
+    "axios": "^1.7.4",
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
