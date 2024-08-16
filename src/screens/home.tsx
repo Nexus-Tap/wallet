@@ -1,5 +1,5 @@
 import { IoIosArrowDown } from "react-icons/io";
-import { CiBellOn, CiWallet } from "react-icons/ci";
+import { CiWallet } from "react-icons/ci";
 import { BsSend } from "react-icons/bs";
 import { FaEthereum } from "react-icons/fa";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ import { getWallet } from "@/apis/wallet";
 import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
-import { storeData } from "@/apis/sdk";
+import { getWalletAddress, signMessage } from "@/sdk";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -42,23 +42,32 @@ export default function HomeScreen() {
     const data = JSON.parse(startappQuery);
 
     try {
-      const signedMessage = await wallet.signMessage(data.data);
+      if (data.type === "SIGN_MSG") {
+        const signedMessage = await signMessage(
+          wallet,
+          data.data,
+          data.sessionId
+        );
 
-      const storedData = await storeData({
-        sessionId: data.sessionId,
-        type: data.type,
-        data: signedMessage,
-      });
+        if (signedMessage) {
+          toast.success("Successfully signed the message");
+        } else {
+          throw new Error("Failed to store the signature");
+        }
+      } else if (data.type === "CONNECT") {
+        const signedMessage = await getWalletAddress(wallet, data.sessionId);
 
-      if (storedData) {
-        toast.success("Successfully signed the message");
-        window.close();
-      } else {
-        throw new Error("Failed to store the signature");
+        if (signedMessage) {
+          toast.success("Successfully connected");
+        } else {
+          throw new Error("Failed to connect to wallet");
+        }
       }
-    } catch (error) {
-      console.error("Error storing signature:", error);
-      toast.error("Failed to sign the message");
+    } catch (error: any) {
+      console.error(error?.message, error);
+      toast.error(error?.message ?? "Error performing action");
+    } finally {
+      window.close();
     }
   }
 
