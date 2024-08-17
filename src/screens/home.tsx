@@ -13,8 +13,8 @@ import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { getWalletAddress, sendEth, signMessage } from "@/sdk";
-import { ethers, TransactionRequest } from "ethers";
-import { sendTransaction } from "@/apis/sdk";
+import { TransactionRequest } from "ethers";
+import { getGasFeesWithNonce, sendTransaction } from "@/apis/sdk";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -91,16 +91,24 @@ export default function HomeScreen() {
   async function onSend() {
     if (!wallet) return;
 
+    const gasData = await getGasFeesWithNonce({
+      chain: "arbitrum_sepolia",
+      walletAddress: wallet.address,
+    });
+
     try {
       const txReq: TransactionRequest = {
         to: "0x17BE8cd0301597c1c701327aeF29917ea744Df4b",
         from: "0x17BE8cd0301597c1c701327aeF29917ea744Df4b",
         value: 10,
         gasLimit: 21000,
-        gasPrice: 100000000,
+        gasPrice: gasData.gasPricWei,
         chainId: 421614,
-        nonce: 6,
+        nonce: gasData.nonce,
       };
+
+      console.log(txReq);
+      console.log(gasData);
 
       const signedTxn = await wallet.signTransaction(txReq);
       console.log(`signedTx: ${signedTxn}`);
@@ -174,8 +182,8 @@ export default function HomeScreen() {
         <div
           className="w-17 h-17 flex flex-col justify-center items-center"
           onClick={() => {
-            onSend();
-            // navigate("/send");
+            // onSend();
+            navigate("/send");
           }}
         >
           <div className="w-12 h-12 flex justify-center items-center bg-gray-900 rounded-full overflow-hidden">
