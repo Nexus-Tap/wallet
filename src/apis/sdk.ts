@@ -1,3 +1,4 @@
+import { GasData, GasDataWithNonce } from "@/interface/global";
 import axios from "axios";
 import { HexString } from "node_modules/ethers/lib.esm/utils/data";
 
@@ -23,30 +24,31 @@ export async function storeData({
   return res.data;
 }
 
-export async function sendTransaction({ signedTxn }: { signedTxn: string }) {
+export async function sendSignedTransaction({
+  signedTxn,
+}: {
+  signedTxn: string;
+}) {
   const res = await axiosBase.post("/send-transaction", {
     signedTxn,
   });
 
-  return res.data;
+  return res.data as {
+    transactionHash: string;
+  };
 }
 
 export async function getGasFees(chain: string) {
   const res = await axiosBase.get(`/get-gas-price?chain=${chain}`);
 
-  const data: {
-    gasPricWei: string;
-    gasPriceGwei: string;
-    estimatedFeeWei: string;
-  } = res.data;
+  const data: GasData = res.data;
+  return data;
 
   // return {
   //   gasPricWei: BigInt(data.gasPricWei),
   //   gasPriceGwei: BigInt(data.gasPriceGwei),
   //   estimatedFeeWei: BigInt(data.estimatedFeeWei),
   // };
-
-  return data;
 }
 
 export async function getGasFeesWithNonce({
@@ -60,12 +62,8 @@ export async function getGasFeesWithNonce({
     `/get-gas-price?chain=${chain}&walletAddress=${walletAddress}`
   );
 
-  const data: {
-    gasPricWei: string;
-    gasPriceGwei: string;
-    estimatedFeeWei: string;
-    nonce: number;
-  } = res.data;
+  const data: GasDataWithNonce = res.data;
+  return data;
 
   // return {
   //   gasPricWei: BigInt(data.gasPricWei),
@@ -73,6 +71,4 @@ export async function getGasFeesWithNonce({
   //   estimatedFeeWei: BigInt(data.estimatedFeeWei),
   //   nonce: data.nonce,
   // };
-
-  return data;
 }

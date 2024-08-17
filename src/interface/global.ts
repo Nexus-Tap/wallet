@@ -31,3 +31,16 @@ export interface Token {
   price: number;
   percent_change: number;
 }
+
+export interface GasData {
+  gasPricWei: string;
+  gasPriceGwei: string;
+  estimatedFeeWei: string;
+}
+
+export interface GasDataWithNonce {
+  gasPricWei: string;
+  gasPriceGwei: string;
+  estimatedFeeWei: string;
+  nonce: number;
+}
