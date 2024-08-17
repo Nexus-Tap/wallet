@@ -36,17 +36,22 @@ export default function HomeScreen() {
   async function processData() {
     const currentParams = new URLSearchParams(location.search);
     const startappQuery = currentParams.get("startapp");
+    let closeWindow = true;
 
     if (!startappQuery || !wallet) return;
 
-    const data = JSON.parse(startappQuery);
+    const startData: {
+      sessionId: string;
+      type: string;
+      data: any;
+    } = JSON.parse(startappQuery);
 
     try {
-      if (data.type === "SIGN_MSG") {
+      if (startData.type === "SIGN_MSG") {
         const signedMessage = await signMessage(
           wallet,
-          data.data,
-          data.sessionId
+          startData.data,
+          startData.sessionId
         );
 
         if (signedMessage) {
@@ -54,28 +59,31 @@ export default function HomeScreen() {
         } else {
           throw new Error("Failed to store the signature");
         }
-      } else if (data.type === "CONNECT") {
-        const walletAddress = await getWalletAddress(wallet, data.sessionId);
+      } else if (startData.type === "CONNECT") {
+        const walletAddress = await getWalletAddress(
+          wallet,
+          startData.sessionId
+        );
 
         if (walletAddress) {
           toast.success("Successfully connected");
         } else {
           throw new Error("Failed to connect to wallet");
         }
-      } else if (data.type === "SEND_ETH") {
-        const txHash = await sendEth(wallet, data.sessionId, data.data);
+      } else if (startData.type === "SEND_TXN") {
+        closeWindow = false;
 
-        if (txHash) {
-          toast.success("Successfully signed txn");
-        } else {
-          throw new Error("Failed to sign txn");
-        }
+        navigate("/send", {
+          state: startData,
+        });
       }
     } catch (error: any) {
       console.error(error?.message, error);
       toast.error(error?.message ?? "Error performing action");
     } finally {
-      window.close();
+      if (closeWindow) {
+        window.close();
+      }
     }
   }
 

@@ -1,4 +1,8 @@
-import { getGasFeesWithNonce, sendSignedTransaction } from "@/apis/sdk";
+import {
+  getGasFeesWithNonce,
+  sendSignedTransaction,
+  storeData,
+} from "@/apis/sdk";
 import { walletAtom } from "@/atom/global";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,9 +26,11 @@ export default function SendPage() {
   const location = useLocation();
   const [wallet] = useAtom(walletAtom);
 
-  const [senderAddress, setToWalletAddr] = useState("");
-  const [amount, setCoinCount] = useState<number>(0);
-  const [token, setCryptoType] = useState("ETH");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  const [senderAddress, setSenderAddress] = useState<string>("");
+  const [amount, setAmount] = useState<number>(0);
+  const [token, setToken] = useState("ETH");
 
   const [gasData, setGasData] = useState<GasData | null>(null);
   const [nonce, setNonce] = useState<number | null>(null);
@@ -56,9 +62,39 @@ export default function SendPage() {
 
   useEffect(() => {
     if (qrData !== "") {
-      setToWalletAddr(qrData);
+      setSenderAddress(qrData);
     }
   }, []);
+
+  useEffect(() => {
+    if (!location.state) return;
+
+    const locationState = location.state as {
+      type: string;
+      sessionId: string;
+      data: {
+        amount: number;
+        toAddress: string;
+        chainId: number;
+      };
+    };
+
+    if (locationState.data.amount) {
+      setAmount(locationState.data.amount);
+    }
+
+    if (locationState.data.toAddress) {
+      setSenderAddress(locationState.data.toAddress);
+    }
+
+    if (locationState.data.chainId) {
+      // TODO: Change chain id in central state
+    }
+
+    if (locationState.sessionId) {
+      setSessionId(locationState.sessionId);
+    }
+  }, [location]);
 
   useEffect(() => {
     loadGasAndNonce();
@@ -96,14 +132,30 @@ export default function SendPage() {
 
       const res = await sendSignedTransaction({ signedTxn });
 
-      if (res.transactionHash) {
-        toast.success(`Transaction sent with hash ${res.transactionHash}`);
-        navigate("/home");
+      if (!res.transactionHash) {
+        throw new Error("Failed to get transaction hash");
       }
+
+      toast.success(`Transaction sent with hash ${res.transactionHash}`);
+
+      if (!sessionId) {
+        navigate("/home");
+        return;
+      }
+
+      await storeData({
+        sessionId: sessionId,
+        type: "SEND_TXN",
+        data: res.transactionHash,
+      });
     } catch (e) {
       console.log(e);
     } finally {
       setTransactionLoading(false);
+
+      if (sessionId) {
+        window.close();
+      }
     }
   }
 
@@ -118,13 +170,15 @@ export default function SendPage() {
           <div className="relative w-full">
             <input
               value={senderAddress}
-              onChange={(e) => setToWalletAddr(e.target.value)}
+              onChange={(e) => setSenderAddress(e.target.value)}
               type="text"
               className="block p-2.5 w-full z-20 text-sm  rounded-e-lg border-s-2 border bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white focus:border-blue-500"
               placeholder="0xCadasd..."
+              disabled={!!sessionId}
               required
             />
             <button
+              disabled={!!sessionId}
               onClick={() => navigate("/scanner")}
               type="submit"
               className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white rounded-e-lg border-l-[1px] focus:ring-4 focus:outline-none"
@@ -135,7 +189,7 @@ export default function SendPage() {
         </div>
 
         <div className="flex w-full max-w-sm items-center space-x-2 mt-10">
-          <Select onValueChange={setCryptoType} value={token}>
+          <Select onValueChange={setToken} value={token} disabled={!!sessionId}>
             <SelectTrigger className="w-[100px] bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
               <SelectValue />
             </SelectTrigger>
@@ -159,10 +213,11 @@ export default function SendPage() {
             </SelectContent>
           </Select>
           <Input
+            disabled={!!sessionId}
             type="number"
             min={0}
             value={amount}
-            onChange={(e) => setCoinCount(parseInt(e.target.value))}
+            onChange={(e) => setAmount(parseInt(e.target.value))}
             placeholder="Amount in wei"
             className="bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white"
           />
