@@ -41,6 +41,7 @@ function App() {
 
   useEffect(() => {
     const encWallet = localStorage.getItem("wallet");
+    // TODO: Replace with startapp data
     const currentParams = new URLSearchParams(location.search);
     const query = currentParams.toString();
 
