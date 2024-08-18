@@ -4,13 +4,18 @@ import {
   RiFileList3Line,
   RiSettings2Line,
 } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export default function BottomBar() {
+
+  const navigate = useNavigate();
+
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full h-16 backdrop-blur-sm bg-white/10 border-gray-800">
       <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         <button
           type="button"
+          onClick={() => navigate("/home")}
           className="inline-flex flex-col items-center justify-center px-5 group"
         >
           <RiWallet3Line className="text-white" size={20} />

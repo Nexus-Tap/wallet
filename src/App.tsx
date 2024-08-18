@@ -15,15 +15,19 @@ import BottomBar from "./components/bottom-bar";
 import ScannerPage from "./screens/auth/scanner";
 import ReceivePage from "./screens/auth/recieve";
 import SendPage from "./screens/send";
+import { BackButton, useBackButton } from "@telegram-apps/sdk-react";
+import { IoArrowBack } from "react-icons/io5";
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const app = window.Telegram.WebApp;
+  const backButton = useBackButton();
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
 
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 700);
+  const bb_routes = ["/scanner", "receive", "send"]
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,6 +42,26 @@ function App() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+
+  function goBack() {
+    navigate("/");
+  }
+
+  useEffect(() => {
+
+    if (bb_routes.includes(location.pathname)) {
+      backButton.show();
+      backButton.on("click", goBack);
+    } else {
+      backButton.hide();
+    }
+
+    return () => {
+      backButton.off("click", goBack);
+    }
+
+  }, [location, navigate, backButton])
 
   useEffect(() => {
     const encWallet = localStorage.getItem("wallet");
@@ -63,8 +87,25 @@ function App() {
     );
   }
 
+
+  const renderBackButton = () => {
+    console.log(location.pathname);
+    if (bb_routes.includes(location.pathname)) {
+      return (
+        <div className="px-4 mt-5 flex">
+          <button onClick={() => navigate("/home")}>
+            <IoArrowBack size={32} className="text-white" />
+          </button>
+          <p className="text-white text-xl font-bold ml-[100px]">Send Payment</p>
+        </div>
+      )
+    }
+    return;
+  }
+
   return (
     <>
+      {renderBackButton}
       <div className="w-screen min-h-screen bg-black flex flex-col">
         <Routes>
           <Route path="/" element={<WelcomeScreen />} />
