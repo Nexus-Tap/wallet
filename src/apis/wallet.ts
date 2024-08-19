@@ -1,23 +1,20 @@
 import { GetWalletResponse } from "@/interface/global";
-
-const BACKEND_URL = import.meta.env.VITE_WALLET_BACKEND;
+import { axiosBase } from "./sdk";
 
 export const getWallet = async (
   address: string,
   chain: string
 ): Promise<GetWalletResponse | null> => {
   try {
-    const resp = await fetch(
-      `${BACKEND_URL}/get-wallet?address=${address}&chain=${chain}`,
-      {
-        method: "GET",
-      }
+    const resp = await axiosBase.get(
+      `/get-wallet?address=${address}&chain=${chain}`
     );
 
     if (resp.status !== 200) {
       return null;
     }
-    const jsn: GetWalletResponse = await resp.json();
+
+    const jsn: GetWalletResponse = resp.data;
 
     return jsn;
   } catch (err: any) {

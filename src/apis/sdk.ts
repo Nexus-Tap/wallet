@@ -2,8 +2,8 @@ import { GasData, GasDataWithNonce } from "@/interface/global";
 import axios from "axios";
 import { HexString } from "node_modules/ethers/lib.esm/utils/data";
 
-const axiosBase = axios.create({
-  baseURL: "http://localhost:3000",
+export const axiosBase = axios.create({
+  baseURL: import.meta.env.VITE_WALLET_BACKEND,
 });
 
 export async function storeData({

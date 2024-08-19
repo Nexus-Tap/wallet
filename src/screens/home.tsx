@@ -217,36 +217,34 @@ export default function HomeScreen() {
       {seeTokens ? (
         <div className="h-[200px] flex flex-col gap-6 px-4 overflow-y-scroll">
           {myWalletData?.tokens.map((item, index) => (
-            <>
-              <div key={index} className="flex flex-row items-center gap-2.5">
-                <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
-                  <FaCoins className="text-gray-200" size={24} />
-                </div>
-
-                <div className="flex flex-1 flex-col">
-                  <p className="text-white font-semibold">{item.name}</p>
-
-                  <p className="text-sm flex flex-row gap-2">
-                    <span className="text-gray-400">
-                      ${item.price.toFixed(2)}
-                    </span>
-
-                    <span
-                      className={cn(
-                        item.percent_change < 0
-                          ? "text-red-600"
-                          : "text-green-300"
-                      )}
-                    >
-                      {item.percent_change > 0 ? "+" : ""}
-                      {item.percent_change.toFixed(2)}%
-                    </span>
-                  </p>
-                </div>
-
-                <p className="text-white text-sm">{item.balance}</p>
+            <div key={index} className="flex flex-row items-center gap-2.5">
+              <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
+                <FaCoins className="text-gray-200" size={24} />
               </div>
-            </>
+
+              <div className="flex flex-1 flex-col">
+                <p className="text-white font-semibold">{item.name}</p>
+
+                <p className="text-sm flex flex-row gap-2">
+                  <span className="text-gray-400">
+                    ${item.price.toFixed(2)}
+                  </span>
+
+                  <span
+                    className={cn(
+                      item.percent_change < 0
+                        ? "text-red-600"
+                        : "text-green-300"
+                    )}
+                  >
+                    {item.percent_change > 0 ? "+" : ""}
+                    {item.percent_change.toFixed(2)}%
+                  </span>
+                </p>
+              </div>
+
+              <p className="text-white text-sm">{item.balance}</p>
+            </div>
           ))}
         </div>
       ) : (
@@ -255,19 +253,17 @@ export default function HomeScreen() {
             <span className="text-sm text-red-500 text-center">No NFTS</span>
           ) : (
             myWalletData?.nfts.map((item, index) => (
-              <>
-                <div key={index} className="flex flex-row items-center gap-2.5">
-                  <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
-                    <img src={item.image_url} alt={item.name} />
-                  </div>
-
-                  <div className="flex flex-1 flex-col">
-                    <p className="text-white font-semibold">{item.name}</p>
-                  </div>
-
-                  <p className="text-white text-sm">{item.identifier}</p>
+              <div key={index} className="flex flex-row items-center gap-2.5">
+                <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
+                  <img src={item.image_url} alt={item.name} />
                 </div>
-              </>
+
+                <div className="flex flex-1 flex-col">
+                  <p className="text-white font-semibold">{item.name}</p>
+                </div>
+
+                <p className="text-white text-sm">{item.identifier}</p>
+              </div>
             ))
           )}
         </div>
