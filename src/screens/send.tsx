@@ -151,6 +151,7 @@ export default function SendPage() {
       });
     } catch (e) {
       console.log(e);
+      toast.error(e?.message ?? "Failed to send transaction");
     } finally {
       setTransactionLoading(false);
 
@@ -197,7 +198,11 @@ export default function SendPage() {
           </div>
 
           <div className="flex w-full max-w-sm items-center space-x-2 mt-10">
-            <Select onValueChange={setToken} value={token} disabled={!!sessionId}>
+            <Select
+              onValueChange={setToken}
+              value={token}
+              disabled={!!sessionId}
+            >
               <SelectTrigger className="w-[100px] bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
                 <SelectValue />
               </SelectTrigger>
