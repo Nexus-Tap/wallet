@@ -55,15 +55,15 @@ export default function HomeScreen() {
 
     // console.log(startData);
 
-    const data = await getReqData({ sessionId: startappQuery });
-
-    const startData = {
-      ...data,
-    };
-
-    toast.success(data.toString());
-
     try {
+      const data = await getReqData({ sessionId: startappQuery });
+
+      const startData = {
+        ...data,
+      };
+
+      toast.success(data.toString());
+
       if (startData.type === "SIGN_MSG") {
         const signedMessage = await signMessage(
           wallet,
