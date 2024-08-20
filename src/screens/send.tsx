@@ -179,8 +179,8 @@ export default function SendPage() {
       setTransactionLoading(false);
 
       if (sessionId) {
-        window.close();
-        app?.close();
+        // window.close();
+        // app?.close();
       }
     }
   }
