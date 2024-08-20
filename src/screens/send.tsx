@@ -53,7 +53,7 @@ export default function SendPage() {
         walletAddress: wallet.address,
       });
 
-      toast.success(JSON.stringify(data.nonce ?? "NA"));
+      toast.success(JSON.stringify(`Nonce - ${data.nonce}` ?? "NA"));
 
       setGasData({ ...data });
       setNonce(data.nonce);
