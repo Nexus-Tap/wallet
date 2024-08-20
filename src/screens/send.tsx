@@ -83,8 +83,6 @@ export default function SendPage() {
       };
     };
 
-    toast.success(JSON.stringify(locationState));
-
     if (locationState.data.amount) {
       setAmount(locationState.data.amount);
     }
@@ -121,6 +119,7 @@ export default function SendPage() {
     }
 
     try {
+      toast.success("Loading gas...");
       setTransactionLoading(true);
       await loadGasAndNonce();
 
@@ -134,9 +133,15 @@ export default function SendPage() {
         nonce: nonce,
       };
 
+      toast.success("signing txn...");
+
       const signedTxn = await wallet.signTransaction(txReq);
 
+      toast.success("sending txn...");
+
       const res = await sendSignedTransaction({ signedTxn });
+
+      toast.success("sent...");
 
       if (!res.transactionHash) {
         throw new Error("Failed to get transaction hash");
