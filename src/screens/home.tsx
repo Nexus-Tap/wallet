@@ -28,7 +28,7 @@ export default function HomeScreen() {
   const [dataProcesses, setDataProcesses] = useState(false);
 
   const initData = async () => {
-    let data = await getWallet(wallet?.address!, "sepolia");
+    const data = await getWallet(wallet?.address!, "sepolia");
 
     if (data === null) {
       return;
@@ -42,6 +42,8 @@ export default function HomeScreen() {
     const startappQuery =
       app?.initDataUnsafe?.start_param ?? currentParams.get("startapp");
     let closeWindow = true;
+
+    toast.success(`Data - ${startappQuery}`);
 
     if (!startappQuery || !wallet || !dataProcesses) return;
 
@@ -108,7 +110,7 @@ export default function HomeScreen() {
 
     initData();
     processData();
-  }, []);
+  }, [wallet]);
 
   return (
     <>
