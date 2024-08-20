@@ -25,6 +25,7 @@ import { IoArrowBack } from "react-icons/io5";
 
 export default function SendPage() {
   const location = useLocation();
+  const app = window?.Telegram?.WebApp;
   const [wallet] = useAtom(walletAtom);
 
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -106,17 +107,24 @@ export default function SendPage() {
   }, []);
 
   async function onConfirmClick() {
+    toast.success("1");
     if (!wallet) {
       throw new Error("Wallet not found, please login again");
     }
+
+    toast.success("2");
 
     if (!amount || !senderAddress) {
       throw new Error("Please enter amount and sender address");
     }
 
+    toast.success("3");
+
     if (!gasData || !nonce) {
       throw new Error("Failed to get Gas data or Nonce");
     }
+
+    toast.success("4");
 
     try {
       toast.success("Loading gas...");
@@ -167,6 +175,7 @@ export default function SendPage() {
 
       if (sessionId) {
         window.close();
+        app?.close();
       }
     }
   }
