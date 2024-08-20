@@ -45,7 +45,7 @@ export default function HomeScreen() {
 
     toast.success(`Data - ${startappQuery}`);
 
-    if (!startappQuery || !wallet || !dataProcesses) return;
+    if (!startappQuery || !wallet) return;
 
     // const startData: {
     //   sessionId: string;
@@ -54,6 +54,7 @@ export default function HomeScreen() {
     // } = JSON.parse(atob(startappQuery));
 
     // console.log(startData);
+    toast.success("hi");
 
     try {
       const data = await getReqData({ sessionId: startappQuery });
