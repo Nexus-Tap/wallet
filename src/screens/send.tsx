@@ -53,6 +53,8 @@ export default function SendPage() {
         walletAddress: wallet.address,
       });
 
+      toast.success(JSON.stringify(data));
+
       setGasData({ ...data });
       setNonce(data.nonce);
     } catch (err: any) {
@@ -104,7 +106,7 @@ export default function SendPage() {
   useEffect(() => {
     loadGasAndNonce();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [wallet]);
 
   async function onConfirmClick() {
     try {
@@ -113,26 +115,18 @@ export default function SendPage() {
         throw new Error("Wallet not found, please login again");
       }
 
-      toast.success("2");
-
       if (!amount || !senderAddress) {
         throw new Error("Please enter amount and sender address");
       }
-
-      toast.success("3");
 
       if (!gasData) {
         throw new Error("Failed to get Gas data");
       }
 
-      toast.success("4");
-
       if (!nonce) {
         throw new Error("Failed to get Nonce");
       }
-      toast.success("5");
 
-      toast.success("Loading gas...");
       setTransactionLoading(true);
       await loadGasAndNonce();
 
@@ -150,11 +144,7 @@ export default function SendPage() {
 
       const signedTxn = await wallet.signTransaction(txReq);
 
-      toast.success("sending txn...");
-
       const res = await sendSignedTransaction({ signedTxn });
-
-      toast.success("sent...");
 
       if (!res.transactionHash) {
         throw new Error("Failed to get transaction hash");
