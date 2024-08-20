@@ -13,6 +13,7 @@ import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { getWalletAddress, sendEth, signMessage } from "@/sdk";
+import { getReqData } from "@/apis/sdk";
 
 export default function HomeScreen() {
   const navigate = useNavigate();
@@ -40,11 +41,19 @@ export default function HomeScreen() {
 
     if (!startappQuery || !wallet) return;
 
-    const startData: {
-      sessionId: string;
-      type: string;
-      data: any;
-    } = JSON.parse(atob(startappQuery));
+    // const startData: {
+    //   sessionId: string;
+    //   type: string;
+    //   data: any;
+    // } = JSON.parse(atob(startappQuery));
+
+    // console.log(startData);
+
+    const data = await getReqData({ sessionId: startappQuery });
+
+    const startData = {
+      ...data,
+    };
 
     try {
       if (startData.type === "SIGN_MSG") {

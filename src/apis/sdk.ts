@@ -24,6 +24,16 @@ export async function storeData({
   return res.data;
 }
 
+export async function getReqData({ sessionId }: { sessionId: string }) {
+  const res = await axiosBase.get(`/sdk/get-req?sessionId=${sessionId}`);
+
+  return res.data as {
+    sessionId: string;
+    data: string;
+    type: string;
+  };
+}
+
 export async function sendSignedTransaction({
   signedTxn,
 }: {

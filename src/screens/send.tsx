@@ -70,7 +70,10 @@ export default function SendPage() {
   useEffect(() => {
     if (!location.state) return;
 
-    const locationState = location.state as {
+    const locationState = {
+      ...location.state,
+      data: JSON.parse(location.state.data),
+    } as {
       type: string;
       sessionId: string;
       data: {
