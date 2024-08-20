@@ -79,6 +79,7 @@ export default function HomeScreen() {
         }
       } else if (startData.type === "SEND_TXN") {
         closeWindow = false;
+        setProcessedAlready(true);
 
         navigate("/send", {
           state: startData,

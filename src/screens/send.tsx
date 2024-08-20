@@ -83,6 +83,8 @@ export default function SendPage() {
       };
     };
 
+    toast.success(JSON.stringify(locationState));
+
     if (locationState.data.amount) {
       setAmount(locationState.data.amount);
     }
