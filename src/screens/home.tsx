@@ -44,7 +44,7 @@ export default function HomeScreen() {
       sessionId: string;
       type: string;
       data: any;
-    } = JSON.parse(startappQuery);
+    } = JSON.parse(atob(startappQuery));
 
     try {
       if (startData.type === "SIGN_MSG") {
