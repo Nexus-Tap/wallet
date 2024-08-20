@@ -92,6 +92,7 @@ export default function HomeScreen() {
       setProcessedAlready(true);
       if (closeWindow) {
         window.close();
+        app?.close();
       }
     }
   }
