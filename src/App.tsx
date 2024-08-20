@@ -21,13 +21,13 @@ import { IoArrowBack } from "react-icons/io5";
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const app = window.Telegram.WebApp;
+  const app = window?.Telegram?.WebApp;
   const backButton = useBackButton();
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
 
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 700);
-  const bb_routes = ["/scanner", "receive", "send"]
+  const bb_routes = ["/scanner", "receive", "send"];
 
   useEffect(() => {
     const handleResize = () => {
@@ -43,13 +43,11 @@ function App() {
     };
   }, []);
 
-
   function goBack() {
     navigate("/");
   }
 
   useEffect(() => {
-
     if (bb_routes.includes(location.pathname)) {
       backButton.show();
       backButton.on("click", goBack);
@@ -59,9 +57,8 @@ function App() {
 
     return () => {
       backButton.off("click", goBack);
-    }
-
-  }, [location, navigate, backButton])
+    };
+  }, [location, navigate, backButton]);
 
   useEffect(() => {
     const encWallet = localStorage.getItem("wallet");
@@ -87,7 +84,6 @@ function App() {
     );
   }
 
-
   const renderBackButton = () => {
     console.log(location.pathname);
     if (bb_routes.includes(location.pathname)) {
@@ -96,12 +92,14 @@ function App() {
           <button onClick={() => navigate("/home")}>
             <IoArrowBack size={32} className="text-white" />
           </button>
-          <p className="text-white text-xl font-bold ml-[100px]">Send Payment</p>
+          <p className="text-white text-xl font-bold ml-[100px]">
+            Send Payment
+          </p>
         </div>
-      )
+      );
     }
     return;
-  }
+  };
 
   return (
     <>
