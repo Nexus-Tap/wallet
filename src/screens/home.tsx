@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const [myWalletData, setMyWalletData] = useAtom(walletData);
 
   const [seeTokens, setSeeTokens] = useState(true);
-  const [dataProcesses, setDataProcesses] = useState(false);
+  const [processedAlready, setProcessedAlready] = useState(false);
 
   const initData = async () => {
     const data = await getWallet(wallet?.address!, "sepolia");
@@ -43,18 +43,9 @@ export default function HomeScreen() {
       app?.initDataUnsafe?.start_param ?? currentParams.get("startapp");
     let closeWindow = true;
 
-    toast.success(`Data - ${startappQuery}`);
-
     if (!startappQuery || !wallet) return;
 
-    // const startData: {
-    //   sessionId: string;
-    //   type: string;
-    //   data: any;
-    // } = JSON.parse(atob(startappQuery));
-
-    // console.log(startData);
-    toast.success("hi");
+    if (processedAlready) return;
 
     try {
       const data = await getReqData({ sessionId: startappQuery });
@@ -62,8 +53,6 @@ export default function HomeScreen() {
       const startData = {
         ...data,
       };
-
-      toast.success("Hello");
 
       if (startData.type === "SIGN_MSG") {
         const signedMessage = await signMessage(
@@ -99,7 +88,7 @@ export default function HomeScreen() {
       console.error(error?.message, error);
       toast.error(error?.message ?? "Error performing action");
     } finally {
-      setDataProcesses(true);
+      setProcessedAlready(true);
       if (closeWindow) {
         window.close();
       }
