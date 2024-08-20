@@ -59,6 +59,8 @@ export default function HomeScreen() {
       ...data,
     };
 
+    toast.success(data.toString());
+
     try {
       if (startData.type === "SIGN_MSG") {
         const signedMessage = await signMessage(
