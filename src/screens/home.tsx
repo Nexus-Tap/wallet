@@ -25,6 +25,7 @@ export default function HomeScreen() {
   const [myWalletData, setMyWalletData] = useAtom(walletData);
 
   const [seeTokens, setSeeTokens] = useState(true);
+  const [dataProcesses, setDataProcesses] = useState(false);
 
   const initData = async () => {
     let data = await getWallet(wallet?.address!, "sepolia");
@@ -38,10 +39,11 @@ export default function HomeScreen() {
 
   async function processData() {
     const currentParams = new URLSearchParams(location.search);
-    const startappQuery = currentParams.get("startapp");
+    const startappQuery =
+      app?.initDataUnsafe?.start_param ?? currentParams.get("startapp");
     let closeWindow = true;
 
-    if (!startappQuery || !wallet) return;
+    if (!startappQuery || !wallet || !dataProcesses) return;
 
     // const startData: {
     //   sessionId: string;
@@ -51,9 +53,7 @@ export default function HomeScreen() {
 
     // console.log(startData);
 
-    const sessionId = app?.initDataUnsafe?.start_param ?? startappQuery;
-
-    const data = await getReqData({ sessionId });
+    const data = await getReqData({ sessionId: startappQuery });
 
     const startData = {
       ...data,
@@ -94,6 +94,7 @@ export default function HomeScreen() {
       console.error(error?.message, error);
       toast.error(error?.message ?? "Error performing action");
     } finally {
+      setDataProcesses(true);
       if (closeWindow) {
         window.close();
       }
