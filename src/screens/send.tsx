@@ -133,7 +133,7 @@ export default function SendPage() {
         nonce: nonce,
       };
 
-      toast.success("signing txn...");
+      toast.success(JSON.stringify(txReq));
 
       const signedTxn = await wallet.signTransaction(txReq);
 
