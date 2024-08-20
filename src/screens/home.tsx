@@ -16,6 +16,8 @@ import { getWalletAddress, sendEth, signMessage } from "@/sdk";
 import { getReqData } from "@/apis/sdk";
 
 export default function HomeScreen() {
+  const app = window?.Telegram?.WebApp;
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,7 +51,9 @@ export default function HomeScreen() {
 
     // console.log(startData);
 
-    const data = await getReqData({ sessionId: startappQuery });
+    const sessionId = app?.initDataUnsafe?.start_param ?? startappQuery;
+
+    const data = await getReqData({ sessionId });
 
     const startData = {
       ...data,
