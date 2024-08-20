@@ -121,11 +121,16 @@ export default function SendPage() {
 
       toast.success("3");
 
-      if (!gasData || !nonce) {
-        throw new Error("Failed to get Gas data or Nonce");
+      if (!gasData) {
+        throw new Error("Failed to get Gas data");
       }
 
       toast.success("4");
+
+      if (!nonce) {
+        throw new Error("Failed to get Nonce");
+      }
+      toast.success("5");
 
       toast.success("Loading gas...");
       setTransactionLoading(true);
