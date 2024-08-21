@@ -108,7 +108,6 @@ export default function SendPage() {
 
   async function onConfirmClick() {
     try {
-      toast.success("1");
       if (!wallet) {
         throw new Error("Wallet not found, please login again");
       }
@@ -167,8 +166,8 @@ export default function SendPage() {
       setTransactionLoading(false);
 
       if (sessionId) {
-        // window.close();
-        // app?.close();
+        window?.close();
+        app?.close();
       }
     }
   }
