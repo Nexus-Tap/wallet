@@ -121,7 +121,7 @@ export default function SendPage() {
         throw new Error("Failed to get Gas data");
       }
 
-      if (nonce === null || nonce === undefined || isNan(nonce)) {
+      if (nonce === null || nonce === undefined || isNaN(nonce)) {
         throw new Error("Failed to get Nonce");
       }
 
