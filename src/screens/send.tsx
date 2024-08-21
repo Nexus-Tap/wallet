@@ -53,8 +53,6 @@ export default function SendPage() {
         walletAddress: wallet.address,
       });
 
-      toast.success(JSON.stringify(`Nonce - ${data.nonce}` ?? "NA"));
-
       setGasData({ ...data });
       setNonce(data.nonce);
     } catch (err: any) {
@@ -123,7 +121,7 @@ export default function SendPage() {
         throw new Error("Failed to get Gas data");
       }
 
-      if (!nonce) {
+      if (nonce === null || nonce === undefined || isNan(nonce)) {
         throw new Error("Failed to get Nonce");
       }
 
