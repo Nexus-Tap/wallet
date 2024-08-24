@@ -132,7 +132,7 @@ export default function SendPage() {
         from: wallet.address,
         value: amount,
         chainId: 421614,
-        gasLimit: 180000,
+        gasLimit: 360000,
         gasPrice: gasData.gasPricWei,
         nonce: nonce,
       };
