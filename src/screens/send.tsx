@@ -132,12 +132,10 @@ export default function SendPage() {
         from: wallet.address,
         value: amount,
         chainId: 421614,
-        gasLimit: 21000,
+        gasLimit: 180000,
         gasPrice: gasData.gasPricWei,
         nonce: nonce,
       };
-
-      toast.success(JSON.stringify(txReq));
 
       const signedTxn = await wallet.signTransaction(txReq);
 
