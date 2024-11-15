@@ -60,29 +60,19 @@ function App() {
     };
   }, [location, navigate, backButton]);
 
-  useEffect(() => {
-    const encWallet = localStorage.getItem("wallet");
-    // TODO: Replace with startapp data
-    const currentParams = new URLSearchParams(location.search);
-    const query = currentParams.toString();
+  // useEffect(() => {
+  //   const encWallet = localStorage.getItem("wallet");
+  //   // TODO: Replace with startapp data
+  //   const currentParams = new URLSearchParams(location.search);
+  //   const query = currentParams.toString();
 
-    if (encWallet === null) {
-      navigate(`/?${query}`);
-    } else {
-      navigate(`/login?${query}`);
-      setIsLoggedin(true);
-    }
-  }, []);
-
-  if (isLargeScreen) {
-    return (
-      <div className="w-screen h-screen bg-white flex justify-center items-center">
-        <p className="text-xl text-red-500">
-          Can only be used inside telegram mini app.
-        </p>
-      </div>
-    );
-  }
+  //   if (encWallet === null) {
+  //     navigate(`/?${query}`);
+  //   } else {
+  //     navigate(`/login?${query}`);
+  //     setIsLoggedin(true);
+  //   }
+  // }, []);
 
   const renderBackButton = () => {
     console.log(location.pathname);
