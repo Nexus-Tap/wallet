@@ -15,15 +15,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GasData, HaloCommand, HaloOptions, HaloResponse } from "@/interface/global";
-import { TransactionRequest } from "ethers";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { IoMdQrScanner } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
-import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
-import { web3 } from "@/providers/Web3Provider";
 import { bridgeUSDC } from "@/lib/transfer";
 import { NetworkList, Networks } from "@/lib/chains";
 
@@ -115,92 +111,38 @@ export default function SendPage() {
   const recievePayment = async (e: any): Promise<void> => {
 
     e.preventDefault();
-    const command: HaloCommand = {
-      name: "sign",
-      keyNo: 1,
-      message: "010203",
-      /* uncomment the line below if you get an error about setting "command.legacySignCommand = true" */
-      // legacySignCommand: true,
-    };
-
-    let res: HaloResponse;
 
     try {
-      // --- request NFC command execution ---
-      // const options: HaloOptions = {
-      //   statusCallback: (cause: string) => {
-      //     switch (cause) {
-      //       case "init":
-      //         toast.loading("Please tap the tag to the back of your smartphone and hold it...", {
-      //           duration: 4000,
-      //           icon: "⚠️",
-      //         });
-      //         break;
-      //       case "retry":
-      //         toast.error("Something went wrong, please try to tap the tag again..", {
-      //           duration: 4000,
-      //           icon: "⚠️",
-      //         });
-      //         break;
-      //       case "scanned":
-      //         toast.success("Tag scanned successfully, Loading wallet", {
-      //           duration: 4000,
-      //           icon: "⚠️",
-      //         });
-      //         break;
-      //       default:
-      //         toast.error(cause, {
-      //           duration: 4000,
-      //           icon: "⚠️",
-      //         });
-      //     }
-      //   }
-      // };
 
+      if (token === "USDC") {
+        await bridgeUSDC(
+          halo!,
+          "arbitrum-sepolia",
+          "optimism-sepolia",
+          "0x375C11FD30FdC95e10aAD66bdcE590E1bccc6aFA",
+          0.1
+        );
+      } else {
 
-      // res = await execHaloCmdWeb(command, options) as HaloResponse;
+        let receipt = await halo?.sendTransaction({
+          to: halo.address,
+          value: currentNetworkWeb3?.utils.toWei(amount, "ether"),
+          gasLimit: 21000,
+          gasPrice: currentNetworkWeb3?.utils.toWei('20', 'gwei'), // Gas price
+        })
 
+        toast.success("Payment Recieved", {
+          duration: 4000,
+          icon: "⚠️",
+        });
 
-      await bridgeUSDC(
-        halo!,
-        "arbitrum-sepolia",
-        "optimism-sepolia",
-        "0x375C11FD30FdC95e10aAD66bdcE590E1bccc6aFA",
-        0.1
-      );
-
-
-
-      // let receipt = await halo?.sendTransaction({
-      //   to: "0xd5148b96d3F6F3234721C72EC8a57a4B07A45ca7",
-      //   value: web3.utils.toWei(amount, "ether"),
-      //   gasLimit: 21000,
-      //   gasPrice: web3.utils.toWei('20', 'gwei'), // Gas price
-      //   nonce: await web3.eth.getTransactionCount(halo.address, 'latest'), // Get the nonce
-      // })
-
-      // let signTx = await halo?.signTransaction(popTx!);
-
-
-      // const receipt = await web3.eth.sendSignedTransaction(signedTransaction);
-
-
-      // console.log(receipt?.hash);
-
-      // the command has succeeded, display the result to the user
-      // setStatusText(JSON.stringify(res, null, 4));
-
-      toast.error("Payment Recieved", {
-        duration: 4000,
-        icon: "⚠️",
-      });
-
-
+        console.log(receipt?.hash);
+      }
 
     } catch (e) {
       console.log(e)
       // the command has failed, display error to the user
-      toast.error('Scanning failed, click on the button again to retry. Details: ' + (e instanceof Error ? e.message : String(e)), {
+      toast.error('Error' + (e instanceof Error ? e.message : String(e)), {
         duration: 4000,
         icon: "⚠️",
       });
@@ -222,7 +164,7 @@ export default function SendPage() {
         <button onClick={() => navigate("/home")}>
           <IoArrowBack size={32} className="text-white" />
         </button>
-        <p className="text-white text-xl font-bold ml-[100px]">Recieve Payment</p>
+        <p className="text-white text-xl font-bold ml-[100px]">Receive Payment</p>
       </div>
       <div className="mt-[20px] px-4">
         <form className="max-w-lg mt-2">
