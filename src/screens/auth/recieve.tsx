@@ -3,7 +3,7 @@ import {
   sendSignedTransaction,
   storeData,
 } from "@/apis/sdk";
-import { haloAtom, walletAtom } from "@/atom/global";
+import { currentNetworkAtom, currentNetworkWeb3Atom, haloAtom, walletAtom } from "@/atom/global";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -25,6 +25,7 @@ import { IoArrowBack } from "react-icons/io5";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { web3 } from "@/providers/Web3Provider";
 import { bridgeUSDC } from "@/lib/transfer";
+import { NetworkList, Networks } from "@/lib/chains";
 
 export default function SendPage() {
   const location = useLocation();
@@ -42,6 +43,10 @@ export default function SendPage() {
 
   const [gasDataLoading, setGasDataLoading] = useState(false);
   const [transactionLoading, setTransactionLoading] = useState(false);
+
+  const [currentNetwork, setCurrentNetwork] = useAtom(currentNetworkAtom);
+  const [currentNetworkWeb3, setCurrentNetworkWeb3] = useAtom(currentNetworkWeb3Atom);
+
 
   const [halo,] = useAtom(haloAtom);
 
@@ -234,7 +239,7 @@ export default function SendPage() {
                 <SelectGroup>
                   <SelectLabel>Token</SelectLabel>
                   <SelectItem value="ETH">ETH</SelectItem>
-                  <SelectItem value="USDC" disabled>
+                  <SelectItem value="USDC">
                     USDC
                   </SelectItem>
                   <SelectItem value="USDT" disabled>
@@ -259,6 +264,59 @@ export default function SendPage() {
             />
           </div>
 
+          {
+            token === "USDC" &&
+            (
+              <div>
+                <div className="w-full mt-4">
+                  <p className="w-full text-white font-bold">User Network</p>
+                  <Select
+                    onValueChange={(network) => {
+                      setCurrentNetwork(network);
+                      setCurrentNetworkWeb3(Networks[network].web3);
+                    }}
+                    value={currentNetwork}
+                  >
+                    <SelectTrigger className="w-full h-5 p-5 bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
+                      <SelectGroup>
+                        {NetworkList.map((network) => (
+                          <SelectItem value={network.network.slug}>{network.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="w-full mt-4">
+                  <p className="w-full text-white font-bold">Merchant Network</p>
+                  <Select
+                    onValueChange={(network) => {
+                      setCurrentNetwork(network);
+                      setCurrentNetworkWeb3(Networks[network].web3);
+                    }}
+                    value={currentNetwork}
+                  >
+                    <SelectTrigger className="w-full h-5 p-5 bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
+                      <SelectGroup>
+                        {NetworkList.map((network) => (
+                          <SelectItem value={network.network.slug}>{network.name}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )
+          }
+
+
+
           <div className="w-full h-[100px] p-3 mt-10 border-[1px] border-gray-500 rounded-lg flex">
             <div className="w-1/2 h-full flex flex-col justify-between">
               <p className="text-md text-white font-semibold">Estimated fee</p>
@@ -275,7 +333,7 @@ export default function SendPage() {
             </div>
           </div>
 
-          <div className="flex-1 flex mt-[450px] items-end justify-between">
+          <div className="absolute bottom-0 w-[90%] flex justify-between pb-10">
             <button
               disabled={transactionLoading || gasDataLoading}
               onClick={() => navigate("/home")}
