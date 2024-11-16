@@ -10,19 +10,20 @@ import { Toaster } from "react-hot-toast";
 import LoginScreen from "./screens/ask-login";
 import GetWalletFromSeed from "./screens/auth/import_wallet/get-wallet-seed";
 import { useAtom } from "jotai";
-import { isLoggedInAtom } from "./atom/global";
+import { haloAtom, isLoggedInAtom } from "./atom/global";
 import BottomBar from "./components/bottom-bar";
 import ScannerPage from "./screens/auth/scanner";
 import ReceivePage from "./screens/auth/recieve";
 import SendPage from "./screens/send";
-import { BackButton, useBackButton } from "@telegram-apps/sdk-react";
+// import { BackButton, useBackButton } from "@telegram-apps/sdk-react";
 import { IoArrowBack } from "react-icons/io5";
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const app = window?.Telegram?.WebApp;
-  const backButton = useBackButton();
+  const [halo] = useAtom(haloAtom);
+  // const app = window?.Telegram?.WebApp;
+  // const backButton = useBackButton();
 
   const [isLoggedin, setIsLoggedin] = useAtom(isLoggedInAtom);
 
@@ -30,6 +31,10 @@ function App() {
   const bb_routes = ["/scanner", "receive", "send"];
 
   useEffect(() => {
+
+    if (halo === null){
+      navigate("/")
+    }
     const handleResize = () => {
       setIsLargeScreen(window.innerWidth > 500);
     };
@@ -43,22 +48,22 @@ function App() {
     };
   }, []);
 
-  function goBack() {
-    navigate("/");
-  }
+  // function goBack() {
+  //   navigate("/");
+  // }
 
-  useEffect(() => {
-    if (bb_routes.includes(location.pathname)) {
-      backButton.show();
-      backButton.on("click", goBack);
-    } else {
-      backButton.hide();
-    }
+  // useEffect(() => {
+  //   if (bb_routes.includes(location.pathname)) {
+  //     backButton.show();
+  //     backButton.on("click", goBack);
+  //   } else {
+  //     backButton.hide();
+  //   }
 
-    return () => {
-      backButton.off("click", goBack);
-    };
-  }, [location, navigate, backButton]);
+  //   return () => {
+  //     backButton.off("click", goBack);
+  //   };
+  // }, [location, navigate, backButton]);
 
   // useEffect(() => {
   //   const encWallet = localStorage.getItem("wallet");
@@ -92,8 +97,7 @@ function App() {
   };
 
   return (
-    <>
-      {renderBackButton}
+    <div>
       <div className="w-screen min-h-screen bg-black flex flex-col">
         <Routes>
           <Route path="/" element={<WelcomeScreen />} />
@@ -118,7 +122,7 @@ function App() {
 
         <Toaster />
       </div>
-    </>
+    </div>
   );
 }
 
