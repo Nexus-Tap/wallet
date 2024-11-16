@@ -5,24 +5,29 @@ import { FaEthereum } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
-import { haloAtom, walletAtom, walletData } from "@/atom/global";
-import { useEffect, useState } from "react";
+import { currentNetworkAtom, currentNetworkWeb3Atom, haloAtom, walletAtom, walletData } from "@/atom/global";
+import { useEffect, useRef, useState } from "react";
 import { getWallet } from "@/apis/wallet";
 
 import { FaCoins } from "react-icons/fa6";
 import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
-import { getWalletAddress, sendEth, signMessage } from "@/sdk";
-import { getReqData } from "@/apis/sdk";
-import { web3 } from "@/providers/Web3Provider";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NetworkList, Networks } from "@/lib/chains";
+import { ABI } from "@/lib/usdc";
+import Web3 from "web3";
 
 export default function HomeScreen() {
   const app = window?.Telegram?.WebApp;
 
   const navigate = useNavigate();
   const location = useLocation();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // Add this at the top
+
 
   const [balance, setBalance] = useState("");
+  const [usdcBalance, setUsdcBalance] = useState("");
+
 
   const [wallet] = useAtom(walletAtom);
   const [halo] = useAtom(haloAtom);
@@ -32,93 +37,50 @@ export default function HomeScreen() {
   const [seeTokens, setSeeTokens] = useState(true);
   const [processedAlready, setProcessedAlready] = useState(false);
 
-  const initData = async () => {
-    const data = await getWallet(wallet?.address!, "sepolia");
-    if (data === null) {
-      return;
-    }
+  const [currentNetwork, setCurrentNetwork] = useAtom(currentNetworkAtom);
+  const [currentNetworkWeb3, setCurrentNetworkWeb3] = useAtom(currentNetworkWeb3Atom);
 
-    setMyWalletData(data);
-  };
 
-  async function processData() {
-    const currentParams = new URLSearchParams(location.search);
-    const startappQuery =
-      app?.initDataUnsafe?.start_param ?? currentParams.get("startapp");
-    let closeWindow = true;
-
-    if (!startappQuery || !wallet) return;
-
-    if (processedAlready) return;
-
+  const loadData = async () => {
     try {
-      const data = await getReqData({ sessionId: startappQuery });
+        console.log(halo?.address!);
+        let balanceInWei = await currentNetworkWeb3?.eth.getBalance(halo?.address!)!;
+        const balanceInEther = currentNetworkWeb3?.utils.fromWei(balanceInWei, 'ether')!;
 
-      const startData = {
-        ...data,
-      };
+        const usdcContract = new (currentNetworkWeb3 as Web3).eth.Contract(ABI, Networks[currentNetwork].usdcContract);
+        const balance: string = await usdcContract.methods.balanceOf(halo?.address).call();
 
-      if (startData.type === "SIGN_MSG") {
-        const signedMessage = await signMessage(
-          wallet,
-          startData.data,
-          startData.sessionId
-        );
-
-        if (signedMessage) {
-          toast.success("Successfully signed the message");
-        } else {
-          throw new Error("Failed to store the signature");
-        }
-      } else if (startData.type === "CONNECT") {
-        const walletAddress = await getWalletAddress(
-          wallet,
-          startData.sessionId
-        );
-
-        if (walletAddress) {
-          toast.success("Successfully connected");
-        } else {
-          throw new Error("Failed to connect to wallet");
-        }
-      } else if (startData.type === "SEND_TXN") {
-        closeWindow = false;
-        setProcessedAlready(true);
-
-        navigate("/send", {
-          state: startData,
-        });
-      }
-    } catch (error: any) {
-      console.error(error?.message, error);
-      toast.error(error?.message ?? "Error performing action");
-    } finally {
-      setProcessedAlready(true);
-      if (closeWindow) {
-        window.close();
-        app?.close();
-      }
+        setBalance(balanceInEther)
+        setUsdcBalance((BigInt(balance) /  BigInt(1000000)).toString())
+        console.log(balanceInEther)
+        console.log(BigInt(balance))
+        console.log(currentNetwork)
+    } catch (error) {
+        console.error("Error loading data:", error);
     }
-  }
+}
 
-  useEffect(() => {
-    if (!wallet) return;
+useEffect(() => {
+    // Clear existing interval if any
+    if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+    }
 
-    initData();
-    processData();
-  }, [wallet]);
+    // Only set up new interval if we have necessary dependencies
+    if (currentNetworkWeb3 && halo?.address && currentNetwork) {
+        loadData(); // Initial load
+        intervalRef.current = setInterval(loadData, 5000);
+    }
 
-
-  const loadData = async ()=> {
-    let balanceInWei = await web3.eth.getBalance(halo?.address!);
-    const balanceInEther = web3.utils.fromWei(balanceInWei, 'ether');
-    setBalance(balanceInEther)
-    console.log(balanceInEther)
-  }
- 
-  useEffect(()=>{
-    loadData();
-  },[])
+    // Cleanup
+    return () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+    };
+}, [currentNetwork]); // Only depe
 
   return (
     <>
@@ -138,12 +100,26 @@ export default function HomeScreen() {
                 halo.address.length - 4,
                 halo.address.length
               )}{" "}
-              <IoIosArrowDown className="ml-3" />{" "}
             </p>
-            <p className="text-white text-[9px] flex items-center">
-              {" "}
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-1"></div>{" "}
-              Ethereum Main network
+            <p className="text-white text-[9px] flex">
+              <Select
+                onValueChange={(network) => {
+                  setCurrentNetwork(network);
+                  setCurrentNetworkWeb3(Networks[network].web3);
+                }}
+                value={currentNetwork}
+              >
+                <SelectTrigger className="w-full h-5 p-2 bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
+                  <SelectGroup>
+                    {NetworkList.map((network) => (
+                      <SelectItem value={network.network.slug}>{network.name}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </p>
           </div>
         </div>
@@ -241,36 +217,34 @@ export default function HomeScreen() {
 
       {seeTokens ? (
         <div className="h-[200px] flex flex-col gap-6 px-4 overflow-y-scroll">
-          {myWalletData?.tokens.map((item, index) => (
-            <div key={index} className="flex flex-row items-center gap-2.5">
-              <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
-                <FaCoins className="text-gray-200" size={24} />
-              </div>
-
-              <div className="flex flex-1 flex-col">
-                <p className="text-white font-semibold">{item.name}</p>
-
-                <p className="text-sm flex flex-row gap-2">
-                  <span className="text-gray-400">
-                    ${item.price.toFixed(2)}
-                  </span>
-
-                  <span
-                    className={cn(
-                      item.percent_change < 0
-                        ? "text-red-600"
-                        : "text-green-300"
-                    )}
-                  >
-                    {item.percent_change > 0 ? "+" : ""}
-                    {item.percent_change.toFixed(2)}%
-                  </span>
-                </p>
-              </div>
-
-              <p className="text-white text-sm">{item.balance}</p>
+          <div className="flex flex-row items-center gap-2.5">
+            <div className="w-10 h-10 flex justify-center items-center bg-gray-800 rounded-full">
+              <FaCoins className="text-gray-200" size={24} />
             </div>
-          ))}
+
+            <div className="flex flex-1 flex-col">
+              <p className="text-white font-semibold">USDC</p>
+
+              <p className="text-sm flex flex-row gap-2">
+                <span className="text-gray-400">
+                  $1
+                </span>
+
+                <span
+                  className={cn(
+                    0.1 < 0
+                      ? "text-red-600"
+                      : "text-green-300"
+                  )}
+                >
+                  {0.1 > 0 ? "+" : ""}
+                  {0.1.toFixed(2)}%
+                </span>
+              </p>
+            </div>
+
+            <p className="text-white text-sm">{usdcBalance}</p>
+          </div>
         </div>
       ) : (
         <div className="h-[200px] flex flex-col gap-6 px-4 overflow-y-scroll">
