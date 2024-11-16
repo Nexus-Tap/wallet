@@ -44,3 +44,23 @@ export interface GasDataWithNonce {
   estimatedFeeWei: string;
   nonce: number;
 }
+
+
+
+// Define types for the command and response
+export interface HaloCommand {
+  name: string;
+  keyNo: number;
+  message: string;
+  legacySignCommand?: boolean;
+}
+
+export interface HaloOptions {
+  statusCallback: (cause: string) => void;
+}
+
+export interface HaloResponse {
+  publicKey: string;
+  signature: string;
+  [key: string]: any; // For any additional fields in the response
+}

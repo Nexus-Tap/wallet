@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
-import { TelegramProvider } from './providers/TelegramProvider.tsx'
+// import { TelegramProvider } from './providers/TelegramProvider.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 
   <React.StrictMode>
-    <TelegramProvider>
+    {/* <TelegramProvider> */}
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </TelegramProvider>
+    {/* </TelegramProvider> */}
   </React.StrictMode>,
 )
