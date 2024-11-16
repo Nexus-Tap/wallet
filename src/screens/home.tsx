@@ -41,7 +41,7 @@ export default function HomeScreen() {
   const [currentNetworkWeb3, setCurrentNetworkWeb3] = useAtom(currentNetworkWeb3Atom);
 
 
-  const loadData = async () => {
+const loadData = async () => {
     try {
         console.log(halo?.address!);
         let balanceInWei = await currentNetworkWeb3?.eth.getBalance(halo?.address!)!;

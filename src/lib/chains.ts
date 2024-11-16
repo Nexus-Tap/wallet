@@ -117,7 +117,7 @@ export const SepoliaTestnet: NetworkType = {
     usdcContract: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
     tokenMinterContract: "0xE997d7d2F6E065a9A93Fa2175E878Fb9081F1f0A",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://optimism-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+    web3: new Web3(new Web3.providers.HttpProvider(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
 };
 
 export const AvalancheFujiTestnet: NetworkType = {
@@ -130,7 +130,7 @@ export const AvalancheFujiTestnet: NetworkType = {
     usdcContract: "0x5425890298aed601595a70AB815c96711a31Bc65",
     tokenMinterContract: "0x4ed8867f9947a5fe140c9dc1c6f207f3489f501e",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://optimism-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+    web3: new Web3(new Web3.providers.HttpProvider(`https://avalanche-fuji.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
 };
 
 export const ArbitrumTestnet: NetworkType = {
@@ -156,7 +156,7 @@ export const BaseSepolia: NetworkType = {
     usdcContract: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     tokenMinterContract: "0xE997d7d2F6E065a9A93Fa2175E878Fb9081F1f0A",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://optimism-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+    web3: new Web3(new Web3.providers.HttpProvider(`https://base-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
 };
 
 export const OPSepolia: NetworkType = {
