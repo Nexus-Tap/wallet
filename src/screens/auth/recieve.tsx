@@ -24,6 +24,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { web3 } from "@/providers/Web3Provider";
+import { bridgeUSDC } from "@/lib/transfer";
 
 export default function SendPage() {
   const location = useLocation();
@@ -121,49 +122,57 @@ export default function SendPage() {
 
     try {
       // --- request NFC command execution ---
-      const options: HaloOptions = {
-        statusCallback: (cause: string) => {
-          switch (cause) {
-            case "init":
-              toast.loading("Please tap the tag to the back of your smartphone and hold it...", {
-                duration: 4000,
-                icon: "⚠️",
-              });
-              break;
-            case "retry":
-              toast.error("Something went wrong, please try to tap the tag again..", {
-                duration: 4000,
-                icon: "⚠️",
-              });
-              break;
-            case "scanned":
-              toast.success("Tag scanned successfully, Loading wallet", {
-                duration: 4000,
-                icon: "⚠️",
-              });
-              break;
-            default:
-              toast.error(cause, {
-                duration: 4000,
-                icon: "⚠️",
-              });
-          }
-        }
-      };
+      // const options: HaloOptions = {
+      //   statusCallback: (cause: string) => {
+      //     switch (cause) {
+      //       case "init":
+      //         toast.loading("Please tap the tag to the back of your smartphone and hold it...", {
+      //           duration: 4000,
+      //           icon: "⚠️",
+      //         });
+      //         break;
+      //       case "retry":
+      //         toast.error("Something went wrong, please try to tap the tag again..", {
+      //           duration: 4000,
+      //           icon: "⚠️",
+      //         });
+      //         break;
+      //       case "scanned":
+      //         toast.success("Tag scanned successfully, Loading wallet", {
+      //           duration: 4000,
+      //           icon: "⚠️",
+      //         });
+      //         break;
+      //       default:
+      //         toast.error(cause, {
+      //           duration: 4000,
+      //           icon: "⚠️",
+      //         });
+      //     }
+      //   }
+      // };
 
 
-      res = await execHaloCmdWeb(command, options) as HaloResponse;
+      // res = await execHaloCmdWeb(command, options) as HaloResponse;
 
-      console.log(halo?.address)
-      console.log(res.etherAddress)
 
-      let receipt = await halo?.sendTransaction({
-        to: "0x8d19e635E5EF038299F4a52b7CbcA63Eac3F6c25",
-        value: web3.utils.toWei(amount, "ether"),
-        gasLimit: 21000,
-        gasPrice: web3.utils.toWei('20', 'gwei'), // Gas price
-        nonce: await web3.eth.getTransactionCount(halo.address, 'latest'), // Get the nonce
-      })
+      await bridgeUSDC(
+        halo!,
+        "arbitrum-sepolia",
+        "optimism-sepolia",
+        "0x375C11FD30FdC95e10aAD66bdcE590E1bccc6aFA",
+        0.1
+      );
+
+
+
+      // let receipt = await halo?.sendTransaction({
+      //   to: "0xd5148b96d3F6F3234721C72EC8a57a4B07A45ca7",
+      //   value: web3.utils.toWei(amount, "ether"),
+      //   gasLimit: 21000,
+      //   gasPrice: web3.utils.toWei('20', 'gwei'), // Gas price
+      //   nonce: await web3.eth.getTransactionCount(halo.address, 'latest'), // Get the nonce
+      // })
 
       // let signTx = await halo?.signTransaction(popTx!);
 
@@ -171,7 +180,7 @@ export default function SendPage() {
       // const receipt = await web3.eth.sendSignedTransaction(signedTransaction);
 
 
-      console.log(receipt?.hash);
+      // console.log(receipt?.hash);
 
       // the command has succeeded, display the result to the user
       // setStatusText(JSON.stringify(res, null, 4));
