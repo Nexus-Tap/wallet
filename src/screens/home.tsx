@@ -5,7 +5,7 @@ import { FaEthereum } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
-import { walletAtom, walletData } from "@/atom/global";
+import { haloAtom, walletAtom, walletData } from "@/atom/global";
 import { useEffect, useState } from "react";
 import { getWallet } from "@/apis/wallet";
 
@@ -14,6 +14,7 @@ import { RiQrScan2Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { getWalletAddress, sendEth, signMessage } from "@/sdk";
 import { getReqData } from "@/apis/sdk";
+import { web3 } from "@/providers/Web3Provider";
 
 export default function HomeScreen() {
   const app = window?.Telegram?.WebApp;
@@ -21,7 +22,11 @@ export default function HomeScreen() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [balance, setBalance] = useState("");
+
   const [wallet] = useAtom(walletAtom);
+  const [halo] = useAtom(haloAtom);
+
   const [myWalletData, setMyWalletData] = useAtom(walletData);
 
   const [seeTokens, setSeeTokens] = useState(true);
@@ -29,7 +34,6 @@ export default function HomeScreen() {
 
   const initData = async () => {
     const data = await getWallet(wallet?.address!, "sepolia");
-
     if (data === null) {
       return;
     }
@@ -104,6 +108,18 @@ export default function HomeScreen() {
     processData();
   }, [wallet]);
 
+
+  const loadData = async ()=> {
+    let balanceInWei = await web3.eth.getBalance(halo?.address!);
+    const balanceInEther = web3.utils.fromWei(balanceInWei, 'ether');
+    setBalance(balanceInEther)
+    console.log(balanceInEther)
+  }
+ 
+  useEffect(()=>{
+    loadData();
+  },[])
+
   return (
     <>
       <div className="w-screen h-16 bg-gray-950 shadow-xl flex items-center justify-between px-5 pt-6">
@@ -117,10 +133,10 @@ export default function HomeScreen() {
 
           <div className="w-1/2 flex flex-col justify-center ml-3">
             <p className="text-white font-bold flex items-center">
-              {wallet?.address.slice(0, 5)}...
-              {wallet?.address.slice(
-                wallet.address.length - 4,
-                wallet.address.length
+              {halo?.address.slice(0, 5)}...
+              {halo?.address.slice(
+                halo.address.length - 4,
+                halo.address.length
               )}{" "}
               <IoIosArrowDown className="ml-3" />{" "}
             </p>
@@ -144,7 +160,7 @@ export default function HomeScreen() {
 
       <div className="w-screen flex flex-col items-center mt-10">
         <p className="text-3xl text-white font-bold">
-          {myWalletData?.balance.toFixed(4)} ETH
+          {balance} ETH
         </p>
         <p className="text-white text-sm">
           ${myWalletData?.price.toFixed(2)}
@@ -165,7 +181,6 @@ export default function HomeScreen() {
         <div
           className="w-17 h-17 flex flex-col justify-center items-center"
           onClick={() => {
-            // onSend();
             navigate("/send");
           }}
         >
