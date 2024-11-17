@@ -132,7 +132,7 @@ export async function approveUSDC(
     halo: HaloWallet,
     sourceNetwork: NetworkType,
     walletAddress: string,
-    amount: number
+    amount: string
 ): Promise<string> {
     const web3 = sourceNetwork.web3;
     const usdcContract = new web3.eth.Contract(
@@ -279,11 +279,14 @@ export async function bridgeUSDC(
     sourceChain: string,
     destinationChain: string,
     walletAddress: string,
-    amountToTransfer: number
+    amountToTransfer: string
 ) {
     const sourceNetwork = Networks[sourceChain];
     const destinationNetwork = Networks[destinationChain];
-    const amount = Math.floor(amountToTransfer * 10 ** 6);
+    const amount = ethers.parseUnits(amountToTransfer, 6); // USDC has 6 decimals
+
+
+    console.log(sourceChain, destinationChain,amount, "chain")
 
     try {
 
@@ -291,39 +294,39 @@ export async function bridgeUSDC(
         console.log(`Starting USDC bridge from ${sourceNetwork.name} to ${destinationNetwork.name}, chain: {}`);
 
         // Step 1: Approve
-        // console.log("Approving USDC transfer...");
-        // const approveTxHash = await approveUSDC(halo, sourceNetwork, walletAddress, amount);
-        // console.log("Approved - txHash:", approveTxHash);
+        console.log("Approving USDC transfer...");
+        const approveTxHash = await approveUSDC(halo, sourceNetwork, walletAddress, amount);
+        console.log("Approved - txHash:", approveTxHash);
 
-        // // Step 2: Burn
-        // console.log("Burning USDC...");
-        // const burnResult = await burnUSDC(halo, sourceNetwork, destinationNetwork, walletAddress, amount);
-        // console.log("Burned - txHash:", burnResult);
+        // Step 2: Burn
+        console.log("Burning USDC...");
+        const burnResult = await burnUSDC(halo, sourceNetwork, destinationNetwork, walletAddress, amount);
+        console.log("Burned - txHash:", burnResult);
 
-        // // // Step 3: Wait for attestation
-        // console.log("Waiting for attestation...");
-        // const attestationSignature = await waitForAttestation(burnResult.messageHash);
-        // console.log("Attestation received", attestationSignature);
+        // // Step 3: Wait for attestation
+        console.log("Waiting for attestation...");
+        const attestationSignature = await waitForAttestation(burnResult.messageHash);
+        console.log("Attestation received", attestationSignature);
 
         
-        // // Step 4: Mint
-        // console.log("Minting USDC on destination chain...");
-        // const mintTxHash = await mintUSDC(
-        //     halo,
-        //     destinationNetwork,
-        //     walletAddress,
-        //     burnResult.messageBytes,
-        //     attestationSignature
-        // );
-
+        // Step 4: Mint
         console.log("Minting USDC on destination chain...");
         const mintTxHash = await mintUSDC(
             halo,
             destinationNetwork,
             walletAddress,
-            "0x000000000000000300000002000000000001dfce0000000000000000000000009f3b8679c73c2fef8b59b4f3444d4e156fb70aa50000000000000000000000009f3b8679c73c2fef8b59b4f3444d4e156fb70aa500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000075faf114eafb1bdbe2f0316df893fd58ce46aa4d000000000000000000000000375c11fd30fdc95e10aad66bdce590e1bccc6afa00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000047953690507505a74ac416a02971b676fc0c3db2",
-            '0x568b58819c1ff68313ab9489a2238edf7cf424bbd0de1dd7987bee6d72e6b3287bb2c283affc9dcfc1e57d8a22bbadb9ea27b581f17fca38f0c690667d4a2fa61c3cde8be56f0015705247dba3576b24bc7da9eaf48ce428b4fbe2eabac2657fc74b787bc9a0b260cf5032ac5ad79b89ea2328870ee6fba43943a5d96a0332cbb51b'
+            burnResult.messageBytes,
+            attestationSignature
         );
+
+        // console.log("Minting USDC on destination chain...");
+        // const mintTxHash = await mintUSDC(
+        //     halo,
+        //     destinationNetwork,
+        //     walletAddress,
+        //     "0x000000000000000300000002000000000001dfce0000000000000000000000009f3b8679c73c2fef8b59b4f3444d4e156fb70aa50000000000000000000000009f3b8679c73c2fef8b59b4f3444d4e156fb70aa500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000075faf114eafb1bdbe2f0316df893fd58ce46aa4d000000000000000000000000375c11fd30fdc95e10aad66bdce590e1bccc6afa00000000000000000000000000000000000000000000000000000000000186a000000000000000000000000047953690507505a74ac416a02971b676fc0c3db2",
+        //     '0x568b58819c1ff68313ab9489a2238edf7cf424bbd0de1dd7987bee6d72e6b3287bb2c283affc9dcfc1e57d8a22bbadb9ea27b581f17fca38f0c690667d4a2fa61c3cde8be56f0015705247dba3576b24bc7da9eaf48ce428b4fbe2eabac2657fc74b787bc9a0b260cf5032ac5ad79b89ea2328870ee6fba43943a5d96a0332cbb51b'
+        // );
         console.log("Minted - txHash:", mintTxHash);
     }
 

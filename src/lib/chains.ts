@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import Web3 from 'web3';
 
 // Define the Chain type to match the structure we need
@@ -104,6 +105,7 @@ export type NetworkType = {
     tokenMinterContract: string;
     api: string;
     web3: Web3;
+    etherWeb3: ethers.JsonRpcProvider;
 };
 
 // Network configurations
@@ -117,7 +119,10 @@ export const SepoliaTestnet: NetworkType = {
     usdcContract: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
     tokenMinterContract: "0xE997d7d2F6E065a9A93Fa2175E878Fb9081F1f0A",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+
+    web3: new Web3(new Web3.providers.HttpProvider(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)),
+    etherWeb3: new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)
+
 };
 
 export const AvalancheFujiTestnet: NetworkType = {
@@ -130,7 +135,8 @@ export const AvalancheFujiTestnet: NetworkType = {
     usdcContract: "0x5425890298aed601595a70AB815c96711a31Bc65",
     tokenMinterContract: "0x4ed8867f9947a5fe140c9dc1c6f207f3489f501e",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://avalanche-fuji.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+    web3: new Web3(new Web3.providers.HttpProvider(`https://avalanche-fuji.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)),
+    etherWeb3: new ethers.JsonRpcProvider(`https://avalanche-fuji.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)
 };
 
 export const ArbitrumTestnet: NetworkType = {
@@ -143,7 +149,8 @@ export const ArbitrumTestnet: NetworkType = {
     usdcContract: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
     tokenMinterContract: "0xE997d7d2F6E065a9A93Fa2175E878Fb9081F1f0A",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://arbitrum-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+    web3: new Web3(new Web3.providers.HttpProvider(`https://arbitrum-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)),
+    etherWeb3: new ethers.JsonRpcProvider(`https://arbitrum-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)
 };
 
 export const BaseSepolia: NetworkType = {
@@ -156,7 +163,8 @@ export const BaseSepolia: NetworkType = {
     usdcContract: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     tokenMinterContract: "0xE997d7d2F6E065a9A93Fa2175E878Fb9081F1f0A",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://base-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+    web3: new Web3(new Web3.providers.HttpProvider(`https://base-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)),
+    etherWeb3: new ethers.JsonRpcProvider(`https://base-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)
 };
 
 export const OPSepolia: NetworkType = {
@@ -169,7 +177,8 @@ export const OPSepolia: NetworkType = {
     usdcContract: "0x5fd84259d66Cd46123540766Be93DFE6D43130D7",
     tokenMinterContract: "0xE997d7d2F6E065a9A93Fa2175E878Fb9081F1f0A",
     api: "https://iris-api-sandbox.circle.com/attestations",
-    web3: new Web3(new Web3.providers.HttpProvider(`https://optimism-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`))
+    web3: new Web3(new Web3.providers.HttpProvider(`https://optimism-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)),
+    etherWeb3: new ethers.JsonRpcProvider(`https://optimism-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`)
 };
 
 // Networks mapping

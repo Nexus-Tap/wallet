@@ -22,6 +22,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
 import { bridgeUSDC } from "@/lib/transfer";
 import { NetworkList, Networks } from "@/lib/chains";
+import { HaloWallet } from "@/lib/HaloWallet";
+import { ethers } from "ethers";
+import { Provider } from "@ethersproject/abstract-provider";
+import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
+import { sendPushNotification } from "@/lib/push";
 
 export default function SendPage() {
   const location = useLocation();
@@ -40,8 +45,10 @@ export default function SendPage() {
   const [gasDataLoading, setGasDataLoading] = useState(false);
   const [transactionLoading, setTransactionLoading] = useState(false);
 
-  const [currentNetwork, setCurrentNetwork] = useAtom(currentNetworkAtom);
-  const [currentNetworkWeb3, setCurrentNetworkWeb3] = useAtom(currentNetworkWeb3Atom);
+  const [userNetwork, setUserNetwork] = useState("arbitrum-sepolia");
+  const [merchantNetwork, setMerchantNetwork] = useState("optimism-sepolia");
+  const [currentNetworkWeb3,] = useAtom(currentNetworkWeb3Atom);
+  const [currentNetwork,] = useAtom(currentNetworkAtom);
 
 
   const [halo,] = useAtom(haloAtom);
@@ -112,20 +119,44 @@ export default function SendPage() {
 
     e.preventDefault();
 
+
+
     try {
+
+      let res = await execHaloCmdWeb({
+        "name": "sign",
+        "keyNo": 1,
+        "message": "1234"
+      });
+
+      console.log(res);
+
+      const scannersWallet = new HaloWallet(res.etherAddress, Networks[currentNetwork].etherWeb3 as any)
+
 
       if (token === "USDC") {
         await bridgeUSDC(
-          halo!,
-          "arbitrum-sepolia",
-          "optimism-sepolia",
-          "0x375C11FD30FdC95e10aAD66bdcE590E1bccc6aFA",
-          0.1
+          scannersWallet,
+          userNetwork,
+          merchantNetwork,
+          halo?.address!,
+          amount
         );
+
+
       } else {
 
-        let receipt = await halo?.sendTransaction({
-          to: halo.address,
+      
+        console.log({
+          from: scannersWallet.address,
+          to: halo?.address,
+          value: currentNetworkWeb3?.utils.toWei(amount, "ether"),
+          gasLimit: 21000,
+          gasPrice: currentNetworkWeb3?.utils.toWei('20', 'gwei'), // Gas price
+        })
+        let receipt = await scannersWallet?.sendTransaction({
+          from: scannersWallet.address,
+          to: halo?.address,
           value: currentNetworkWeb3?.utils.toWei(amount, "ether"),
           gasLimit: 21000,
           gasPrice: currentNetworkWeb3?.utils.toWei('20', 'gwei'), // Gas price
@@ -135,6 +166,7 @@ export default function SendPage() {
           duration: 4000,
           icon: "⚠️",
         });
+        
 
         console.log(receipt?.hash);
       }
@@ -214,10 +246,9 @@ export default function SendPage() {
                   <p className="w-full text-white font-bold">User Network</p>
                   <Select
                     onValueChange={(network) => {
-                      setCurrentNetwork(network);
-                      setCurrentNetworkWeb3(Networks[network].web3);
+                      setUserNetwork(network);
                     }}
-                    value={currentNetwork}
+                    value={userNetwork}
                   >
                     <SelectTrigger className="w-full h-5 p-5 bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
                       <SelectValue />
@@ -236,10 +267,9 @@ export default function SendPage() {
                   <p className="w-full text-white font-bold">Merchant Network</p>
                   <Select
                     onValueChange={(network) => {
-                      setCurrentNetwork(network);
-                      setCurrentNetworkWeb3(Networks[network].web3);
+                      setMerchantNetwork(network);
                     }}
-                    value={currentNetwork}
+                    value={merchantNetwork}
                   >
                     <SelectTrigger className="w-full h-5 p-5 bg-gray-700 border-s-gray-700  border-gray-600 placeholder-gray-400 text-white">
                       <SelectValue />

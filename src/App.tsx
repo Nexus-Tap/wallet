@@ -17,6 +17,8 @@ import ReceivePage from "./screens/auth/recieve";
 import SendPage from "./screens/send";
 // import { BackButton, useBackButton } from "@telegram-apps/sdk-react";
 import { IoArrowBack } from "react-icons/io5";
+import { fetchNotifications, optInToChannel } from "./lib/push";
+import { ethers } from "ethers";
 
 function App() {
   const navigate = useNavigate();
@@ -30,54 +32,29 @@ function App() {
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 700);
   const bb_routes = ["/scanner", "receive", "send"];
 
+  const notificationWallet = ethers.Wallet.createRandom();
+
+
+  // const loadPush = async () => {
+  //   optInToChannel("0xd5148b96d3F6F3234721C72EC8a57a4B07A45ca7", notificationWallet, notificationWallet.address);
+  //   setInterval(async () => {
+  //     let notifications = await fetchNotifications(halo?.address!);
+
+  //     console.log(notifications,"====");
+  //   }, 10000);
+  // }
+
   useEffect(() => {
 
     if (halo === null){
       navigate("/")
+    } else {
+
+      // loadPush();
+
     }
-    const handleResize = () => {
-      setIsLargeScreen(window.innerWidth > 500);
-    };
-
-    // Add event listener
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, []);
 
-  // function goBack() {
-  //   navigate("/");
-  // }
-
-  // useEffect(() => {
-  //   if (bb_routes.includes(location.pathname)) {
-  //     backButton.show();
-  //     backButton.on("click", goBack);
-  //   } else {
-  //     backButton.hide();
-  //   }
-
-  //   return () => {
-  //     backButton.off("click", goBack);
-  //   };
-  // }, [location, navigate, backButton]);
-
-  // useEffect(() => {
-  //   const encWallet = localStorage.getItem("wallet");
-  //   // TODO: Replace with startapp data
-  //   const currentParams = new URLSearchParams(location.search);
-  //   const query = currentParams.toString();
-
-  //   if (encWallet === null) {
-  //     navigate(`/?${query}`);
-  //   } else {
-  //     navigate(`/login?${query}`);
-  //     setIsLoggedin(true);
-  //   }
-  // }, []);
 
   const renderBackButton = () => {
     console.log(location.pathname);
